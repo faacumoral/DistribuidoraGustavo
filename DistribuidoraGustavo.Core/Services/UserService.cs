@@ -1,8 +1,10 @@
 ﻿using DistribuidoraGustavo.Data.EfModels;
 using DistribuidoraGustavo.Interfaces.Models;
 using DistribuidoraGustavo.Interfaces.Requests;
+using DistribuidoraGustavo.Interfaces.Responses;
 using DistribuidoraGustavo.Interfaces.Services;
 using DistribuidoraGustavo.Interfaces.Settings;
+using FMCW.Common.Jwt;
 using FMCW.Common.Results;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,28 +13,40 @@ namespace DistribuidoraGustavo.Core.Services;
 public class UserService : IUserService
 {
     private readonly DistribuidoraGustavoContext _context;
-    
-    public UserService(DistribuidoraGustavoContext context)
+    private readonly IJwtManager _jwtManager;
+
+    public UserService(
+        DistribuidoraGustavoContext context,
+        IJwtManager jwtManager)
     {
         _context = context;
+        _jwtManager = jwtManager;
     }
 
-    public async Task<DTOResult<UserModel>> TryLogin(LoginRequest request)
+    public async Task<DTOResult<LoginResponse>> TryLogin(LoginRequest request)
     {
         var encryptPassword = ApplicationSettings.Config.EncryptKey;
 
         var encodedPassword = FMCW.Seguridad.Encriptador.Encriptar(request.Password, encryptPassword);
 
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username && u.Password == encodedPassword);
 
         if (user == null)
-        {
-            return DTOResult<UserModel>.Error("Usuario y/o password incorrecto");
-        }
+            return DTOResult<LoginResponse>.Error("Usuario y/o password incorrecto");
 
-        return DTOResult<UserModel>.Ok(new UserModel
+        if (user.Active != true)
+            return DTOResult<LoginResponse>.Error("El usuario está deshabilitado");
+
+        var jwt = _jwtManager.GenerateToken(user.UserId);
+
+        return DTOResult<LoginResponse>.Ok(new LoginResponse
         {
-            
+            Jwt = jwt.Jwt,
+            User = new UserModel
+            { 
+                UserId = user.UserId,
+                Username = user.Username
+            }
         });
     }
 

@@ -11,5 +11,5 @@ public partial class User
 
     public string? Password { get; set; }
 
-    public bool? Active { get; set; }
+    public bool Active { get; set; }
 }

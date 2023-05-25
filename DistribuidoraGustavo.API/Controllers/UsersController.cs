@@ -1,6 +1,8 @@
-using DistribuidoraGustavo.API.Shared;
 using DistribuidoraGustavo.Interfaces.Requests;
+using DistribuidoraGustavo.Interfaces.Responses;
 using DistribuidoraGustavo.Interfaces.Services;
+using FMCW.Common.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DistribuidoraGustavo.API.Controllers;
@@ -18,13 +20,12 @@ public class UsersController : BaseController
         _userService = userService;
     }
 
-    [Anonymous]
+    [AllowAnonymous]
     [HttpPost("login")]
-    public async Task Login([FromBody] LoginRequest request)
+    public async Task<DTOResult<LoginResponse>> Login([FromBody] LoginRequest request)
     {
         var response = await _userService.TryLogin(request);
-
-
+        return response;
     }
 
 }

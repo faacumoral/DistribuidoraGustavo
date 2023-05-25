@@ -2,6 +2,7 @@ using DistribuidoraGustavo.Core.Services;
 using DistribuidoraGustavo.Data.EfModels;
 using DistribuidoraGustavo.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
+using DistribuidoraGustavo.API;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +15,9 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddTransient<IUserService, UserService>();
 
-DistribuidoraGustavo.API.Configure.AddConfig(builder.Configuration);
+builder.InitConfig();
+builder.AddJwtManager();
+builder.AddCors();
 
 builder.Services.AddDbContext<DistribuidoraGustavoContext>(
     options => {
@@ -33,6 +36,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseCors("Origins");
 
 app.MapControllers();
 
