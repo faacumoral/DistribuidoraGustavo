@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="FMCW.Common">
+      <HintPath>..\Dlls\FMCW.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="FMCW.Seguridad.Encriptador">
+      <HintPath>..\Dlls\FMCW.Seguridad.Encriptador.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DistribuidoraGustavo.Data\DistribuidoraGustavo.Data.csproj" />
+    <ProjectReference Include="..\DistribuidoraGustavo.Interfaces\DistribuidoraGustavo.Interfaces.csproj" />
+  </ItemGroup>
+
+</Project>

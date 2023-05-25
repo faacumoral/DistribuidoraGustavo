@@ -1,0 +1,45 @@
+﻿@page "/login"
+@layout LoginLayout
+@inherits LoginBase
+@using Microsoft.AspNetCore.Components.Web
+
+<div class="content row d-flex justify-content-center" style="text-align: center;">
+    <div class="col-12">
+        <div class="row form-row">
+            <div class="col-12">
+                <h1>Bienvenido</h1>
+            </div>
+        </div>
+        <div class="row form-row">
+            <div class="col-4 offset-4">
+                <input disabled="@requestSent" placeholder="username" class="form-control" @bind="credentials.Username" />
+            </div>
+        </div>
+        <div class="row form-row">
+            <div class="col-4 offset-4">
+                <input disabled="@requestSent" placeholder="password" type="password" class="form-control" @bind="credentials.Password" />
+            </div>
+        </div>
+        <div class="row form-row">
+            <div class="col-4 offset-4">
+                <button disabled="@requestSent" class="btn btn-success" @onclick="Login">Login</button>
+            </div>
+        </div>
+        <Spinner Show="requestSent"></Spinner>
+        @*@if (loginResponse != null && loginResponse.ResultError != null)
+        {
+            <div class="row form-row">
+                <div class="col-4"></div>
+                <div class="col-4">
+                    <div class="card text-white bg-danger">
+                        <div class="card-body">
+                            <p class="card-text text-white">
+                                @loginResponse.ResultError.FriendlyErrorMessage
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }*@
+    </div>
+</div>

@@ -1,0 +1,57 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32616.157
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DistribuidoraGustavo.App", "DistribuidoraGustavo.App\DistribuidoraGustavo.App.csproj", "{3D0225D1-2DC0-4839-89D2-DCDB986C62EC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistribuidoraGustavo.API", "DistribuidoraGustavo.API\DistribuidoraGustavo.API.csproj", "{FF01BF84-F6A1-49A8-A692-672937B3453C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistribuidoraGustavo.Core", "DistribuidoraGustavo.Core\DistribuidoraGustavo.Core.csproj", "{443A174A-BDF5-44F1-8BA1-B2E233A6C33E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistribuidoraGustavo.Interfaces", "DistribuidoraGustavo.Interfaces\DistribuidoraGustavo.Interfaces.csproj", "{A1408FC8-2627-49BC-9E5D-4CEEA42FA7D7}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DistribuidoraGustavo.SQL", "DistribuidoraGustavo.SQL\DistribuidoraGustavo.SQL.sqlproj", "{F7B7AAF8-CDB3-4236-B972-1F03827331BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistribuidoraGustavo.Data", "DistribuidoraGustavo.Data\DistribuidoraGustavo.Data.csproj", "{BDEC11D2-C75F-4C78-AFB3-1F546CA3DC5F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3D0225D1-2DC0-4839-89D2-DCDB986C62EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D0225D1-2DC0-4839-89D2-DCDB986C62EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D0225D1-2DC0-4839-89D2-DCDB986C62EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D0225D1-2DC0-4839-89D2-DCDB986C62EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF01BF84-F6A1-49A8-A692-672937B3453C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF01BF84-F6A1-49A8-A692-672937B3453C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF01BF84-F6A1-49A8-A692-672937B3453C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF01BF84-F6A1-49A8-A692-672937B3453C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{443A174A-BDF5-44F1-8BA1-B2E233A6C33E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{443A174A-BDF5-44F1-8BA1-B2E233A6C33E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{443A174A-BDF5-44F1-8BA1-B2E233A6C33E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{443A174A-BDF5-44F1-8BA1-B2E233A6C33E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1408FC8-2627-49BC-9E5D-4CEEA42FA7D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1408FC8-2627-49BC-9E5D-4CEEA42FA7D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1408FC8-2627-49BC-9E5D-4CEEA42FA7D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1408FC8-2627-49BC-9E5D-4CEEA42FA7D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7B7AAF8-CDB3-4236-B972-1F03827331BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7B7AAF8-CDB3-4236-B972-1F03827331BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7B7AAF8-CDB3-4236-B972-1F03827331BF}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{F7B7AAF8-CDB3-4236-B972-1F03827331BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7B7AAF8-CDB3-4236-B972-1F03827331BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7B7AAF8-CDB3-4236-B972-1F03827331BF}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{BDEC11D2-C75F-4C78-AFB3-1F546CA3DC5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDEC11D2-C75F-4C78-AFB3-1F546CA3DC5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDEC11D2-C75F-4C78-AFB3-1F546CA3DC5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDEC11D2-C75F-4C78-AFB3-1F546CA3DC5F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0C65B686-1358-4CAF-BFD3-6A2740011F76}
+	EndGlobalSection
+EndGlobal
