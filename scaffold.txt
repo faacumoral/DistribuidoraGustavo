@@ -1,1 +1,1 @@
-Scaffold-DbContext 'Data Source=.\sqlexpress01;Initial Catalog=DistribuidoraGustavo; Integrated Security=SSPI;Encrypt=false' Microsoft.EntityFrameworkCore.SqlServer -o EfModels/
+Scaffold-DbContext 'Data Source=.\sqlexpress01;Initial Catalog=DistribuidoraGustavo; Integrated Security=SSPI;Encrypt=false' Microsoft.EntityFrameworkCore.SqlServer -o EfModels/ -f

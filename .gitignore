@@ -19,6 +19,8 @@ Thumbs.db
 *.cache
 *.ilk
 *.log
+*.jfm
+*.dbmdl
 [Bb]in
 [Dd]ebug*/
 [Pp]ublishProfiles/

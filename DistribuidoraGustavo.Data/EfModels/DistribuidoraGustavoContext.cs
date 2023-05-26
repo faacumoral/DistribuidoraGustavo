@@ -19,7 +19,11 @@ public partial class DistribuidoraGustavoContext : DbContext
 
     public virtual DbSet<Invoice> Invoices { get; set; }
 
+    public virtual DbSet<PriceList> PriceLists { get; set; }
+
     public virtual DbSet<Product> Products { get; set; }
+
+    public virtual DbSet<ProductsPriceList> ProductsPriceLists { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
@@ -56,6 +60,20 @@ public partial class DistribuidoraGustavoContext : DbContext
                 .HasForeignKey(d => d.ClientId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Invoices_ClientID");
+
+            entity.HasOne(d => d.PriceList).WithMany(p => p.Invoices)
+                .HasForeignKey(d => d.PriceListId)
+                .HasConstraintName("FK_Invoices_PriceListID");
+        });
+
+        modelBuilder.Entity<PriceList>(entity =>
+        {
+            entity.HasKey(e => e.PriceListId).HasName("PK__PriceLis__1E30F3AC15AD6B80");
+
+            entity.Property(e => e.Name)
+                .HasMaxLength(10)
+                .IsUnicode(false);
+            entity.Property(e => e.Percent).HasColumnType("decimal(10, 2)");
         });
 
         modelBuilder.Entity<Product>(entity =>
@@ -68,16 +86,38 @@ public partial class DistribuidoraGustavoContext : DbContext
             entity.Property(e => e.Code).IsUnicode(false);
             entity.Property(e => e.Description).IsUnicode(false);
             entity.Property(e => e.Name).IsUnicode(false);
-            entity.Property(e => e.UnitPrice).HasColumnType("decimal(10, 2)");
+        });
+
+        modelBuilder.Entity<ProductsPriceList>(entity =>
+        {
+            entity.HasKey(e => e.ProductPriceListId).HasName("PK__Products__9384CA09AEAE7C28");
+
+            entity.ToTable("Products_PriceLists");
+
+            entity.Property(e => e.ProductPriceListId).HasColumnName("Product_PriceListID");
+            entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.PriceListId).HasColumnName("PriceListID");
+            entity.Property(e => e.ProductId).HasColumnName("ProductID");
+
+            entity.HasOne(d => d.PriceList).WithMany(p => p.ProductsPriceLists)
+                .HasForeignKey(d => d.PriceListId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Products_PriceLists_PriceListID");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.ProductsPriceLists)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Products_PriceLists_ProductID");
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CC4CBC734F0E");
+            entity.HasKey(e => e.UserId).HasName("PK__tmp_ms_x__1788CC4CF22E9043");
 
             entity.Property(e => e.Active)
                 .IsRequired()
                 .HasDefaultValueSql("((1))");
+            entity.Property(e => e.Name).IsUnicode(false);
             entity.Property(e => e.Password).IsUnicode(false);
             entity.Property(e => e.Username).IsUnicode(false);
         });

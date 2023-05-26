@@ -5,15 +5,15 @@ VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DistribuidoraGustavo.App", "DistribuidoraGustavo.App\DistribuidoraGustavo.App.csproj", "{3D0225D1-2DC0-4839-89D2-DCDB986C62EC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistribuidoraGustavo.API", "DistribuidoraGustavo.API\DistribuidoraGustavo.API.csproj", "{FF01BF84-F6A1-49A8-A692-672937B3453C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DistribuidoraGustavo.API", "DistribuidoraGustavo.API\DistribuidoraGustavo.API.csproj", "{FF01BF84-F6A1-49A8-A692-672937B3453C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistribuidoraGustavo.Core", "DistribuidoraGustavo.Core\DistribuidoraGustavo.Core.csproj", "{443A174A-BDF5-44F1-8BA1-B2E233A6C33E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DistribuidoraGustavo.Core", "DistribuidoraGustavo.Core\DistribuidoraGustavo.Core.csproj", "{443A174A-BDF5-44F1-8BA1-B2E233A6C33E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistribuidoraGustavo.Interfaces", "DistribuidoraGustavo.Interfaces\DistribuidoraGustavo.Interfaces.csproj", "{A1408FC8-2627-49BC-9E5D-4CEEA42FA7D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DistribuidoraGustavo.Interfaces", "DistribuidoraGustavo.Interfaces\DistribuidoraGustavo.Interfaces.csproj", "{A1408FC8-2627-49BC-9E5D-4CEEA42FA7D7}"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DistribuidoraGustavo.SQL", "DistribuidoraGustavo.SQL\DistribuidoraGustavo.SQL.sqlproj", "{F7B7AAF8-CDB3-4236-B972-1F03827331BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistribuidoraGustavo.Data", "DistribuidoraGustavo.Data\DistribuidoraGustavo.Data.csproj", "{BDEC11D2-C75F-4C78-AFB3-1F546CA3DC5F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DistribuidoraGustavo.Data", "DistribuidoraGustavo.Data\DistribuidoraGustavo.Data.csproj", "{BDEC11D2-C75F-4C78-AFB3-1F546CA3DC5F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

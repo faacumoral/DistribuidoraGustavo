@@ -13,7 +13,7 @@ public partial class Product
 
     public string? Description { get; set; }
 
-    public decimal UnitPrice { get; set; }
-
     public bool? Active { get; set; }
+
+    public virtual ICollection<ProductsPriceList> ProductsPriceLists { get; set; } = new List<ProductsPriceList>();
 }

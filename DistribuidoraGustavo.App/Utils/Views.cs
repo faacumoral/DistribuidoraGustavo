@@ -2,6 +2,7 @@
 {
     public enum Views
     {
-        Login
+        Login,
+        Home
     }
 }

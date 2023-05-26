@@ -22,7 +22,6 @@ public class LoginBase : ComponentBase
 
     protected async Task Login()
     {
-        //loginResponse = null;
         var apiRequest = ApiRequest.BuildPost("Users/Login", credentials, false);
         requestSent = true;
         loginResponse = await ApiClient.Send<DTOResult<LoginResponse>>(apiRequest);
@@ -30,7 +29,8 @@ public class LoginBase : ComponentBase
         if (loginResponse.Success)
         {
             await SessionStorage.SetJwt(loginResponse.ResultOk.Jwt);
-            NavigationManager?.NavigateTo(Views.Login.ToString());
+            await SessionStorage.SetUser(loginResponse.ResultOk.User);
+            NavigationManager?.NavigateTo(Views.Home.ToString());
         }
     }
 }

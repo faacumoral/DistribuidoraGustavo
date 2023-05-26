@@ -15,5 +15,9 @@ public partial class Invoice
 
     public bool Active { get; set; }
 
+    public int? PriceListId { get; set; }
+
     public virtual Client Client { get; set; } = null!;
+
+    public virtual PriceList? PriceList { get; set; }
 }

@@ -1,5 +1,6 @@
 ﻿using DistribuidoraGustavo.Data.EfModels;
 using DistribuidoraGustavo.Interfaces.Models;
+using DistribuidoraGustavo.Interfaces.Parsers;
 using DistribuidoraGustavo.Interfaces.Requests;
 using DistribuidoraGustavo.Interfaces.Responses;
 using DistribuidoraGustavo.Interfaces.Services;
@@ -42,11 +43,7 @@ public class UserService : IUserService
         return DTOResult<LoginResponse>.Ok(new LoginResponse
         {
             Jwt = jwt.Jwt,
-            User = new UserModel
-            { 
-                UserId = user.UserId,
-                Username = user.Username
-            }
+            User = user.ToModel()
         });
     }
 

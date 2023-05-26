@@ -3,7 +3,8 @@
 public class UserModel : BaseModel
 {
     public int UserId { get; set; }
-    public string Username  { get; set; } = string.Empty;
-    public bool Active { get; set; }
+    public string Username  { get; set; }
+    public string Name { get; set; }
+    public bool? Active { get; set; }
 }
 
