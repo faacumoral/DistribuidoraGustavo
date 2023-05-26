@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DistribuidoraGustavo.Data\DistribuidoraGustavo.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="FMCW.Common">
       <HintPath>..\Dlls\FMCW.Common.dll</HintPath>
     </Reference>
