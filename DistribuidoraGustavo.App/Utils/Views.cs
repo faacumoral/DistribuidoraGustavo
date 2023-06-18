@@ -3,6 +3,7 @@
     public enum Views
     {
         Login,
-        Home
+        Home,
+        AddInvoice
     }
 }

@@ -65,6 +65,7 @@
     <Build Include="Tables\Clients.sql" />
     <Build Include="Tables\PriceLists.sql" />
     <Build Include="Tables\Products_PriceLists.sql" />
+    <Build Include="Tables\Invoices_Products.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Local.DistribuidoraGustavo.SQL.publish.xml" />

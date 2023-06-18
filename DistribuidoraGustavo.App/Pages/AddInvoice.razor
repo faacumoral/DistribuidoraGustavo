@@ -1,0 +1,95 @@
+﻿@page "/addinvoice"
+@inherits AddInvoiceBase
+
+
+<div class="row">
+    <div class="col-2">Cliente</div>
+    <div class="col-4">
+        <select class="form-control">
+            @foreach (var client in Clients)
+            {
+                <option value="@client.ClientId">@client.Name</option>
+            }
+        </select>
+    </div>
+
+    <div class="col-2">Lista de precios</div>
+    <div class="col-4">
+        <select class="form-control">
+            @foreach (var priceList in PriceLists)
+            {
+                <option value="@priceList.PriceListId">@priceList.Name</option>
+            }
+        </select>
+    </div>
+</div>
+
+<hr />
+
+<div class="row">
+
+    <div class="col-5">
+        <div class="d-flex bd-highlight mb-3">
+            <div class="p-2 bd-highlight">
+                <span style="font-size: 20px; font-weight:bold;">Búsqueda</span>
+            </div>
+            <div class="ms-auto p-2 bd-highlight">
+                <input class="form-control" @bind="ProductsFilter" />
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-7">
+        <div class="d-flex bd-highlight mb-3">
+            <div class="p-2 bd-highlight">
+                <span style="font-size: 25px; font-weight:bold;">Factura</span>
+            </div>
+            <div class="ms-auto p-2 bd-highlight">
+                <button class="btn btn-danger">Eliminar</button>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<div class="row">
+
+    <div class="col-4">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th scope="col">Cód.</th>
+                    <th scope="col">Nombre</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Products)
+                {
+                    <tr>
+                        <td><input type="checkbox" /></td>
+                        <td>@product.Code</td>
+                        <td>@product.Name</td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-1" style="font-size: 30px; align-self: center;">
+     
+        <i class="bi bi-chevron-double-right" title="Agregar productos seleccionados"></i>
+       
+    </div>
+
+    <div class="col-7">
+        
+    </div>
+
+</div>
+

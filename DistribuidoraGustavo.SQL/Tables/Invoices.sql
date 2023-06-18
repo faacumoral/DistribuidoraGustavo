@@ -6,7 +6,7 @@
     [CreatedDate]       DATETIME NOT NULL DEFAULT GETUTCDATE(),
     [Active]            BIT NOT NULL DEFAULT 0,
     [PriceListId]       INT NULL, 
-
+    [Description]       NVARCHAR(MAX) NULL, 
     CONSTRAINT [FK_Invoices_ClientID] FOREIGN KEY ([ClientID]) REFERENCES [Clients]([ClientID]), 
     CONSTRAINT [FK_Invoices_PriceListID] FOREIGN KEY ([PriceListId]) REFERENCES [PriceLists]([PriceListId]) 
 )

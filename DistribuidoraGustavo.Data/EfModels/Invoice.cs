@@ -17,7 +17,11 @@ public partial class Invoice
 
     public int? PriceListId { get; set; }
 
+    public string? Description { get; set; }
+
     public virtual Client Client { get; set; } = null!;
+
+    public virtual ICollection<InvoicesProduct> InvoicesProducts { get; set; } = new List<InvoicesProduct>();
 
     public virtual PriceList? PriceList { get; set; }
 }

@@ -1,5 +1,4 @@
 ﻿using DistribuidoraGustavo.Data.EfModels;
-using DistribuidoraGustavo.Interfaces.Models;
 using DistribuidoraGustavo.Interfaces.Parsers;
 using DistribuidoraGustavo.Interfaces.Requests;
 using DistribuidoraGustavo.Interfaces.Responses;
@@ -11,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DistribuidoraGustavo.Core.Services;
 
-public class UserService : IUserService
+public class UserService : BaseService, IUserService
 {
     private readonly DistribuidoraGustavoContext _context;
     private readonly IJwtManager _jwtManager;

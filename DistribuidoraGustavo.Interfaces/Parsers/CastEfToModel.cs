@@ -21,5 +21,45 @@ namespace DistribuidoraGustavo.Interfaces.Parsers
                 UserId = user.UserId,
                 Username  = user.Username,
             };
+
+        public static ClientModel ToModel(this Client client)
+            => new()
+            {
+                Name = client.Name,
+                ClientId = client.ClientId
+            };
+
+        public static ProductModel ToModel(this Product product)
+            => new()
+            {
+                Code = product.Code,
+                Description = product.Description,
+                Name = product.Name,
+                ProductId = product.ProductId
+            };
+
+        public static ProductInvoiceModel ToModel(this InvoicesProduct invoicesProducts)
+            => new()
+            {
+                Code = invoicesProducts.Product?.Code,
+                Description = invoicesProducts.Product?.Description,
+                Name = invoicesProducts.Product?.Name,
+                ProductId = invoicesProducts.Product?.ProductId ?? 0,
+                Amount = invoicesProducts.Amount,
+                Quantity = invoicesProducts.Quantity,
+                UnitPrice = invoicesProducts.UnitPrice
+            };
+
+        public static InvoiceModel ToModel(this Invoice invoice)
+            => new()
+            {
+                Client = invoice.Client?.ToModel(),
+                InvoiceId = invoice.InvoiceId,
+                InvoiceNumber = invoice.InvoiceNumber,
+                PriceList = invoice.PriceList?.ToModel(),
+                Products = invoice.InvoicesProducts?.Select(ToModel).ToList(),
+                CreatedDate = invoice.CreatedDate.ToString("dd/MM/yyyy"),
+                Description = invoice.Description
+            };
     }
 }

@@ -14,6 +14,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IInvoiceService, InvoiceService>();
+builder.Services.AddTransient<IClientService, ClientService>();
+builder.Services.AddTransient<IPriceListService, PriceListService>();
+builder.Services.AddTransient<IProductService, ProductService>();
+
+
 
 builder.InitConfig();
 builder.AddJwtManager();
@@ -32,6 +38,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseAuthentication();
 
 app.UseHttpsRedirection();
 

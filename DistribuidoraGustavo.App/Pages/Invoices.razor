@@ -1,7 +1,51 @@
 ﻿@page "/invoices"
 @inherits InvoicesBase
 
-<h3>Invoices</h3>
+<div class="row">
+    <div class="col-1">
+         <p>Cliente:</p>
+    </div>
+    <div class="col-3">
+          <select class="form-control"></select>
+    </div>
+    <div class="col-auto me-auto">
+         <button class=" btn btn-success" @onclick="GoToAddInvoice">
+            <i class="bi bi-file-earmark-plus"></i>
+            Agregar factura</button>
+    </div>
+  </div>
+<hr />
+
+@if (Invoices != null)
+{
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Cliente</th>
+          <th scope="col">Número de factura</th>
+          <th scope="col">Importe</th>
+          <th scope="col">Fecha</th>
+          <th scope="col">Descripción</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var invoice in Invoices)
+        {
+            <tr>
+                <td>@invoice.Client?.Name</td>
+                <td>@invoice.InvoiceNumber</td>
+                <td>$@invoice.TotalAmount</td>
+                <td>@invoice.CreatedDate</td>
+                <td>@invoice.Description</td>
+            </tr>
+        }
+    
+      </tbody>
+    </table>
+
+
+}
+
 
 @code {
 

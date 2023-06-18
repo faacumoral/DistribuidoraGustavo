@@ -19,6 +19,8 @@ public partial class DistribuidoraGustavoContext : DbContext
 
     public virtual DbSet<Invoice> Invoices { get; set; }
 
+    public virtual DbSet<InvoicesProduct> InvoicesProducts { get; set; }
+
     public virtual DbSet<PriceList> PriceLists { get; set; }
 
     public virtual DbSet<Product> Products { get; set; }
@@ -66,6 +68,29 @@ public partial class DistribuidoraGustavoContext : DbContext
                 .HasConstraintName("FK_Invoices_PriceListID");
         });
 
+        modelBuilder.Entity<InvoicesProduct>(entity =>
+        {
+            entity.HasKey(e => e.InvoicesProductsId).HasName("PK__Invoices__9C47038442EB4875");
+
+            entity.ToTable("Invoices_Products");
+
+            entity.Property(e => e.InvoicesProductsId).HasColumnName("InvoicesProductsID");
+            entity.Property(e => e.Amount).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.InvoiceId).HasColumnName("InvoiceID");
+            entity.Property(e => e.ProductId).HasColumnName("ProductID");
+            entity.Property(e => e.UnitPrice).HasColumnType("decimal(10, 2)");
+
+            entity.HasOne(d => d.Invoice).WithMany(p => p.InvoicesProducts)
+                .HasForeignKey(d => d.InvoiceId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Invoices_Products_InvoiceID");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.InvoicesProducts)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Invoices_Products_ProductID");
+        });
+
         modelBuilder.Entity<PriceList>(entity =>
         {
             entity.HasKey(e => e.PriceListId).HasName("PK__PriceLis__1E30F3AC15AD6B80");
@@ -90,11 +115,11 @@ public partial class DistribuidoraGustavoContext : DbContext
 
         modelBuilder.Entity<ProductsPriceList>(entity =>
         {
-            entity.HasKey(e => e.ProductPriceListId).HasName("PK__Products__9384CA09AEAE7C28");
+            entity.HasKey(e => e.ProductPriceListId).HasName("PK__tmp_ms_x__7892B325BCFBA799");
 
             entity.ToTable("Products_PriceLists");
 
-            entity.Property(e => e.ProductPriceListId).HasColumnName("Product_PriceListID");
+            entity.Property(e => e.ProductPriceListId).HasColumnName("ProductPriceListID");
             entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.PriceListId).HasColumnName("PriceListID");
             entity.Property(e => e.ProductId).HasColumnName("ProductID");

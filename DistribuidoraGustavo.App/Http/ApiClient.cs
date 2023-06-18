@@ -60,8 +60,20 @@ namespace DistribuidoraGustavo.App.Http
             }
 
             var response = await _client.SendAsync(requestMessage);
-            // var responseStatusCode = response.StatusCode; 
-            return await response.Content.ReadFromJsonAsync<Tresult>();
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonResponse = await response.Content.ReadFromJsonAsync<Tresult>();
+                return jsonResponse;
+            }
+
+            return new Tresult()
+            {
+                ResultError = ErrorResult.Build(await response.Content.ReadAsStringAsync()),
+                Success = false,
+                ResultOperation = ResultOperation.Error,
+            };
+
+
         }
     }
 }

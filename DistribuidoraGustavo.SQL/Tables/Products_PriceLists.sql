@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Products_PriceLists]
 (
-    [Product_PriceListID] INT NOT NULL PRIMARY KEY IDENTITY(1,1),
+    [ProductPriceListID] INT NOT NULL PRIMARY KEY IDENTITY(1,1),
     [ProductID] INT NOT NULL,
     [PriceListID]   INT NOT NULL,
     [Price] DECIMAL(10,2) NOT NULL, 
