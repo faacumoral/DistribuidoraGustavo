@@ -11,5 +11,9 @@ public partial class Client
 
     public string InvoicePrefix { get; set; } = null!;
 
+    public int? DefaultPriceListId { get; set; }
+
+    public virtual PriceList? DefaultPriceList { get; set; }
+
     public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
 }

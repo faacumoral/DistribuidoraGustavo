@@ -38,10 +38,15 @@ public partial class DistribuidoraGustavoContext : DbContext
             entity.HasKey(e => e.ClientId).HasName("PK__Clients__05623063FF67CADC");
 
             entity.Property(e => e.ClientId).HasColumnName("CLientId");
+            entity.Property(e => e.DefaultPriceListId).HasColumnName("DefaultPriceListID");
             entity.Property(e => e.InvoicePrefix)
                 .HasMaxLength(255)
                 .IsUnicode(false);
             entity.Property(e => e.Name).IsUnicode(false);
+
+            entity.HasOne(d => d.DefaultPriceList).WithMany(p => p.Clients)
+                .HasForeignKey(d => d.DefaultPriceListId)
+                .HasConstraintName("FK_Clients_PriceListID");
         });
 
         modelBuilder.Entity<Invoice>(entity =>

@@ -50,4 +50,6 @@ public static class Extensions
 
     public static void Navigate(this NavigationManager navigation, Views view)
         => navigation.NavigateTo(view.ToString());
+
+    public static string ToShortString(this string str) => str.Length > 20 ? str?[..20] : str;
 }

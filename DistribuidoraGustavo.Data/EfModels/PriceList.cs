@@ -11,6 +11,8 @@ public partial class PriceList
 
     public decimal? Percent { get; set; }
 
+    public virtual ICollection<Client> Clients { get; set; } = new List<Client>();
+
     public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
 
     public virtual ICollection<ProductsPriceList> ProductsPriceLists { get; set; } = new List<ProductsPriceList>();

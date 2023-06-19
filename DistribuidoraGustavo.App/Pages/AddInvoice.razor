@@ -1,11 +1,13 @@
 ﻿@page "/addinvoice"
+@using DistribuidoraGustavo.App.Utils
 @inherits AddInvoiceBase
 
 
 <div class="row">
     <div class="col-2">Cliente</div>
     <div class="col-4">
-        <select class="form-control">
+        <select class="form-control" @onchange="(ChangeEventArgs e) => ClientChange(int.Parse(e.Value.ToString()))">
+            <option value="0"> - </option>
             @foreach (var client in Clients)
             {
                 <option value="@client.ClientId">@client.Name</option>
@@ -15,10 +17,20 @@
 
     <div class="col-2">Lista de precios</div>
     <div class="col-4">
-        <select class="form-control">
+        <select class="form-control"
+        @onchange="(ChangeEventArgs e) => PriceListChange(int.Parse(e.Value.ToString()))">
+            <option value="0"> - </option>
             @foreach (var priceList in PriceLists)
             {
-                <option value="@priceList.PriceListId">@priceList.Name</option>
+                if (State.PriceListSelected == priceList.PriceListId)
+                {
+                    <option value="@priceList.PriceListId" selected>@priceList.Name</option>
+                }
+                else 
+                {
+                    <option value="@priceList.PriceListId">@priceList.Name</option>
+
+                }
             }
         </select>
     </div>
@@ -29,13 +41,22 @@
 <div class="row">
 
     <div class="col-5">
-        <div class="d-flex bd-highlight mb-3">
-            <div class="p-2 bd-highlight">
-                <span style="font-size: 20px; font-weight:bold;">Búsqueda</span>
+        <div class="row">
+
+            <div class="col-10">
+                <input disabled="@State.SearchingProducts" 
+                    class="form-control" @bind="State.ProductSearch" id="txtSearchProduct"
+                    @bind:event="oninput" @onkeyup="WaitAndSearch" />
             </div>
-            <div class="ms-auto p-2 bd-highlight">
-                <input class="form-control" @bind="ProductsFilter" />
+
+            <div class="col-2" style="margin-top:8px;">
+                @if (!State.SearchingProducts)
+                {
+                    <i class="bi bi-search"></i>
+                }
+                <Spinner Show="State.SearchingProducts"></Spinner>
             </div>
+
         </div>
     </div>
 
@@ -43,7 +64,7 @@
     <div class="col-7">
         <div class="d-flex bd-highlight mb-3">
             <div class="p-2 bd-highlight">
-                <span style="font-size: 25px; font-weight:bold;">Factura</span>
+                <span style="font-size: 25px; font-weight:bold;">Importe: $1000</span>
             </div>
             <div class="ms-auto p-2 bd-highlight">
                 <button class="btn btn-danger">Eliminar</button>
@@ -68,12 +89,19 @@
                 </tr>
             </thead>
             <tbody>
+                @if (Products == null || Products.Count == 0)
+                {
+                    <p>No se encontraron productos</p>
+                }
                 @foreach (var product in Products)
                 {
-                    <tr>
-                        <td><input type="checkbox" /></td>
+                    <tr @onclick="() => product.Checked = !product.Checked" style="cursor:pointer;">
+                        <td style="width:10%;">
+                            <label style="display: inline-block; width: 100%;">
+                                <input type="checkbox" @bind="product.Checked"/>
+                            </label></td>
                         <td>@product.Code</td>
-                        <td>@product.Name</td>
+                        <td>@product.Name.ToShortString()</td>
                     </tr>
                 }
 
@@ -81,14 +109,41 @@
         </table>
     </div>
 
-    <div class="col-1" style="font-size: 30px; align-self: center;">
-     
+    <div class="col-1" style="font-size: 30px; align-self: center; cursor: pointer;" @onclick="AddProducts">
         <i class="bi bi-chevron-double-right" title="Agregar productos seleccionados"></i>
-       
     </div>
 
     <div class="col-7">
-        
+         <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Cód.</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Cantidad</th>
+                    <th scope="col">Precio Uni.</th>
+                    <th scope="col">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in ProductInvoices)
+                {
+                    <tr>
+                        <td>@product.Code</td>
+                        <td>@product.Name.ToShortString()</td>
+                        <td>
+                            <input class="form-control" @bind="product.Quantity" />
+                        </td>
+                         <td>
+                            <input class="form-control" @bind="product.UnitPrice" />
+                        </td> 
+                        <td>
+                            <input class="form-control" @bind="product.Amount" />
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
     </div>
 
 </div>

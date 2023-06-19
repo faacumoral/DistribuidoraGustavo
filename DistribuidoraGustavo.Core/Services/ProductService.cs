@@ -15,7 +15,7 @@ namespace DistribuidoraGustavo.Core.Services
             _context = context;
         }
 
-        public async Task<IList<ProductModel>> GetAll(string filter = "")
+        public async Task<IList<ProductModel>> GetAll(string filter = "", int? priceListId = 0)
         {
             var productsDb = _context.Products.Where(p => p.Active == true);
 
@@ -23,9 +23,11 @@ namespace DistribuidoraGustavo.Core.Services
             {
                 filter = filter.ToLower();
                 productsDb = productsDb
-                .Where(p => p.Name.ToLower().Contains(filter))
-                .Where(p => p.Code.ToLower().Contains(filter))
-                .Where(p => p.Description != null && p.Description!.ToLower().Contains(filter));
+                .Where(p => 
+                   p.Name.ToLower().Contains(filter)
+                || p.Code.ToLower().Contains(filter)
+                || (p.Description != null && p.Description!.ToLower().Contains(filter))
+                );
             }
 
             var products = await productsDb.Take(100).ToListAsync();

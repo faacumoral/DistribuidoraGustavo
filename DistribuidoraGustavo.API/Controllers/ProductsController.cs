@@ -16,11 +16,13 @@ namespace DistribuidoraGustavo.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ListResult<ProductModel>> GetAll([FromQuery] string? filter ="")
+        public async Task<ListResult<ProductModel>> GetAll(
+            [FromQuery] string? filter = "",
+            [FromQuery] int? priceListId = 0)
         {
             try
             {
-                var products = await _productService.GetAll(filter);
+                var products = await _productService.GetAll(filter, priceListId);
                 return ListResult<ProductModel>.Ok(products.ToList());
             }
             catch (Exception ex)
