@@ -1,0 +1,22 @@
+﻿
+<input class="form-control" value="@Value" @onchange="ValueChanged" />
+
+@code {
+
+    [Parameter]
+    public int Value { get; set; }
+
+    [Parameter] 
+    public Action<int>? HasChanged { get; set; }
+
+    private void ValueChanged(ChangeEventArgs e)
+    {
+        int.TryParse(e.Value.ToString(), out int value);
+        Value = value;
+
+        if (HasChanged != null)
+            HasChanged(Value);
+
+        StateHasChanged();
+    }
+}

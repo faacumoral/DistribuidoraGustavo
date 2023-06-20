@@ -1,4 +1,5 @@
 ﻿using DistribuidoraGustavo.App.Http;
+using DistribuidoraGustavo.App.Shared;
 using DistribuidoraGustavo.App.Utils;
 using DistribuidoraGustavo.Interfaces.Models;
 using FMCW.Common.Results;
@@ -8,6 +9,8 @@ namespace DistribuidoraGustavo.App.Pages;
 
 public class InvoicesBase : ComponentBase
 {
+    public Alerts Alert { get; set; }
+
     [Inject] ApiClient ApiClient { get; set; }
     [Inject] NavigationManager NavigationManager { get; set; }
 

@@ -1,7 +1,10 @@
 ﻿@page "/addinvoice"
 @using DistribuidoraGustavo.App.Utils
+@using DistribuidoraGustavo.App.Shared;
 @inherits AddInvoiceBase
 
+
+<Alerts @ref="Alert"></Alerts>
 
 <div class="row">
     <div class="col-2">Cliente</div>
@@ -64,7 +67,7 @@
     <div class="col-7">
         <div class="d-flex bd-highlight mb-3">
             <div class="p-2 bd-highlight">
-                <span style="font-size: 25px; font-weight:bold;">Importe: $1000</span>
+                <span style="font-size: 25px; font-weight:bold;">Importe: $@ProductInvoices.Sum(pi => pi.Amount)</span>
             </div>
             <div class="ms-auto p-2 bd-highlight">
                 <button class="btn btn-danger">Eliminar</button>
@@ -91,7 +94,7 @@
             <tbody>
                 @if (Products == null || Products.Count == 0)
                 {
-                    <p>No se encontraron productos</p>
+                    <p>-</p>
                 }
                 @foreach (var product in Products)
                 {
@@ -109,7 +112,7 @@
         </table>
     </div>
 
-    <div class="col-1" style="font-size: 30px; align-self: center; cursor: pointer;" @onclick="AddProducts">
+    <div class="col-1" style="font-size: 30px; align-self: auto; cursor: pointer;" @onclick="AddProducts">
         <i class="bi bi-chevron-double-right" title="Agregar productos seleccionados"></i>
     </div>
 
@@ -131,13 +134,22 @@
                         <td>@product.Code</td>
                         <td>@product.Name.ToShortString()</td>
                         <td>
-                            <input class="form-control" @bind="product.Quantity" />
+                            <NumberInput 
+                                Value="@product.Quantity"
+                                HasChanged="(int val) => {product.Quantity = val; ProductValueChanged(product);}"
+                            ></NumberInput>
                         </td>
                          <td>
-                            <input class="form-control" @bind="product.UnitPrice" />
+                            <DecimalInput 
+                                Value="@product.Amount"
+                                HasChanged="(decimal val) => { product.UnitPrice = val; ProductValueChanged(product);}"
+                            ></DecimalInput>
                         </td> 
                         <td>
-                            <input class="form-control" @bind="product.Amount" />
+                            <DecimalInput 
+                                Value="@product.Amount"
+                                HasChanged="(decimal val) => { product.Amount = val; }"
+                            ></DecimalInput>
                         </td>
                     </tr>
                 }

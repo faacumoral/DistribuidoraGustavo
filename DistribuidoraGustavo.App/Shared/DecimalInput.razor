@@ -1,0 +1,22 @@
+﻿
+<input class="form-control" value="@Value" @onchange="ValueChanged" />
+
+@code {
+
+    [Parameter]
+    public decimal Value { get; set; }
+
+    [Parameter] 
+    public Action<decimal>? HasChanged { get; set; }
+
+    private void ValueChanged(ChangeEventArgs e)
+    {
+        decimal.TryParse(e.Value.ToString(), out decimal value);
+        Value = value;
+
+        if (HasChanged != null)
+            HasChanged(value);
+
+        StateHasChanged();
+    }
+}

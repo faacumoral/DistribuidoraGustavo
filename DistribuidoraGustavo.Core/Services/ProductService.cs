@@ -29,10 +29,29 @@ namespace DistribuidoraGustavo.Core.Services
                 || (p.Description != null && p.Description!.ToLower().Contains(filter))
                 );
             }
-
             var products = await productsDb.Take(100).ToListAsync();
 
-            return products.Select(CastEfToModel.ToModel).ToList();
+            var productsModel = products.Select(CastEfToModel.ToModel).ToList();
+
+            if (priceListId != null && productsModel.Count > 0)
+            {
+                var priceList = await _context.PriceLists.FirstOrDefaultAsync(pl => pl.PriceListId == priceListId);
+
+                if (priceList != null)
+                {
+                    var productsId = productsModel.Select(pm => pm.ProductId);
+                    var prices = await _context.ProductsPriceLists
+                        .Where(ppl => ppl.PriceListId == priceListId)
+                        .Where(ppl => productsId.Contains(ppl.ProductId)).ToListAsync();
+
+                    foreach (var product in productsModel)
+                    {
+                        product.UnitPrice = prices.FirstOrDefault(p => p.ProductId == product.ProductId)?.Price ?? 0;
+                    }
+                }
+            }
+
+            return productsModel;
         }
     }
 }

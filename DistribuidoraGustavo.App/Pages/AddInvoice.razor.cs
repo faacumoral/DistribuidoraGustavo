@@ -1,5 +1,5 @@
 ﻿using DistribuidoraGustavo.App.Http;
-using DistribuidoraGustavo.App.Services.Toast;
+using DistribuidoraGustavo.App.Shared;
 using DistribuidoraGustavo.App.UIModels;
 using DistribuidoraGustavo.Interfaces.Models;
 using FMCW.Common.Results;
@@ -22,8 +22,8 @@ public class AddInvoiceBase : ComponentBase
 {
     [Inject] IJSRuntime jsRuntime { get; set; }
     [Inject] ApiClient ApiClient { get; set; }
-    [Inject] ToastService toastService { get; set; }
 
+    public Alerts Alert { get; set; }
 
     private System.Timers.Timer timer = default!;
 
@@ -34,8 +34,6 @@ public class AddInvoiceBase : ComponentBase
     protected IList<ClientModel> Clients { get; set; } = new List<ClientModel>();
     protected IList<PriceListModel> PriceLists { get; set; } = new List<PriceListModel>();
 
-    protected IList<ProductModel> CheckedProducts = new List<ProductModel>();
-
     private void InitTimer()
     {
         timer = new System.Timers.Timer(2000);
@@ -45,25 +43,19 @@ public class AddInvoiceBase : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        toastService.ShowSucces("probando");
         InitTimer();
 
         var clientsApiRequest = ApiRequest.BuildGet("Clients");
         var priceListsApiRequest = ApiRequest.BuildGet("PriceLists");
-        var productsApiRequest = ApiRequest.BuildGet("Products");
 
         var clientsResult = await ApiClient.Send<ListResult<ClientModel>>(clientsApiRequest);
         var priceListResult = await ApiClient.Send<ListResult<PriceListModel>>(priceListsApiRequest);
-        var productsResult = await ApiClient.Send<ListResult<UIProductModel>>(productsApiRequest);
 
         if (clientsResult.Success)
             Clients = clientsResult.ResultOk;
 
         if (priceListResult.Success)
             PriceLists = priceListResult.ResultOk;
-
-        if (productsResult.Success)
-            Products = productsResult.ResultOk;
 
         await base.OnInitializedAsync();
     }
@@ -74,10 +66,10 @@ public class AddInvoiceBase : ComponentBase
 
         if (State.ClientSelected == 0 || State.PriceListSelected == 0)
         {
-            toastService.ShowSucces("error");
-
+            Alert.ShowError("Seleccione un cliente y una lista de precios antes de buscar productos");
             return;
         }
+
         State.SearchingProducts = true;
 
         await InvokeAsync(StateHasChanged);
@@ -111,7 +103,6 @@ public class AddInvoiceBase : ComponentBase
     {
         State.ClientSelected = clientId;
         State.PriceListSelected = Clients.FirstOrDefault(c => c.ClientId == clientId)?.DefaultPriceListId ?? 0;
-        // seleccionar lista de precio default de ese cliente
         SearchProducts(null, null);
     }
 
@@ -121,22 +112,40 @@ public class AddInvoiceBase : ComponentBase
         SearchProducts(null, null);
     }
 
+    protected void ProductValueChanged(ProductInvoiceModel product)
+    {
+        product.Amount = product.Quantity * product.UnitPrice;
+        StateHasChanged();
+    }
+
     protected void AddProducts()
     {
         var checkedProducts = Products.Where(p => p.Checked).ToList();
 
+        var checkedProductsIds = checkedProducts.Select(cp => cp.ProductId);
+
         foreach (var product in checkedProducts)
         {
-            ProductInvoices.Add(new ProductInvoiceModel
+            var productInvoice = ProductInvoices.FirstOrDefault(pi => pi.ProductId == product.ProductId);
+            if (productInvoice == null)
             {
-                Code = product.Code,
-                Name = product.Name,
-                ProductId = product.ProductId,
-                UnitPrice = product.UnitPrice,
-                Amount = product.UnitPrice,
-                Quantity = 1
-            });
+                ProductInvoices.Add(new ProductInvoiceModel
+                {
+                    Code = product.Code,
+                    Name = product.Name,
+                    ProductId = product.ProductId,
+                    UnitPrice = product.UnitPrice,
+                    Amount = product.UnitPrice,
+                    Quantity = 1
+                });
+            }
+            else
+            {
+                productInvoice.Quantity += 1;
+                productInvoice.Amount += product.UnitPrice;
+            }
         }
+
     }
 
 

@@ -1,0 +1,52 @@
+﻿@using System.Timers
+
+@*<div class="toast (IsVisible ? "toast-visible" : null) BackgroundCssClass">*@
+
+@if (!string.IsNullOrEmpty(@Message))
+{
+    <div class="row form-row">
+        <div class="col-12">
+            <div class="card text-white bg-danger" >
+                <div class="card-body">
+                    <p class="card-text text-white">
+                        @Message
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+
+    public Alerts()
+    {
+        timer = new System.Timers.Timer
+        {
+            AutoReset = false,
+            Interval = 3000
+        };
+
+        timer.Elapsed += HideError;
+    }
+
+    public string Message { get; set; }
+    public System.Timers.Timer timer;
+
+    public void HideError(object? source, ElapsedEventArgs e)
+    {
+        Message = "";
+        StateHasChanged();
+    }
+
+    public void ShowError(string errorMessage, bool hideAfterTime = true)
+    {
+        timer.Stop();
+        Message = errorMessage;
+        StateHasChanged();
+
+        if (hideAfterTime)
+            timer.Start();
+    }
+
+}
