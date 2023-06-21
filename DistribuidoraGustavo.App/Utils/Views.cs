@@ -4,6 +4,7 @@
     {
         Login,
         Home,
+        Invoices,
         AddInvoice
     }
 }

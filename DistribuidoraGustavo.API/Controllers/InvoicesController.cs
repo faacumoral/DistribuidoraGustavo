@@ -29,7 +29,21 @@ namespace DistribuidoraGustavo.API.Controllers
                 Log.Error(ex);
                 return ListResult<InvoiceModel>.Error(ex);
             }
+        }
 
+        [HttpPost]
+        public async Task<DTOResult<InvoiceModel>> Post([FromBody] InvoiceModel invoiceModel)
+        {
+            try
+            {
+                var invoice = await _invoiceService.InsertInvoice(invoiceModel);
+                return invoice;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+                return DTOResult<InvoiceModel>.Error(ex);
+            }
         }
 
     }

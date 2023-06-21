@@ -1,6 +1,7 @@
 ﻿using DistribuidoraGustavo.App.Http;
 using DistribuidoraGustavo.App.Shared;
 using DistribuidoraGustavo.App.UIModels;
+using DistribuidoraGustavo.App.Utils;
 using DistribuidoraGustavo.Interfaces.Models;
 using FMCW.Common.Results;
 using Microsoft.AspNetCore.Components;
@@ -16,13 +17,17 @@ public class AddInvoiceState
     public int ClientSelected { get; set; }
     public string ProductSearch { get; set; }
     public bool SearchingProducts { get; set; } = false;
+    public bool Saving { get; set; } = false;
+
 }
 
 public class AddInvoiceBase : ComponentBase
 {
     [Inject] IJSRuntime jsRuntime { get; set; }
     [Inject] ApiClient ApiClient { get; set; }
+    [Inject] NavigationManager NavigationManager { get; set; }
 
+    public int InvoiceId { get; set; }
     public Alerts Alert { get; set; }
 
     private System.Timers.Timer timer = default!;
@@ -118,6 +123,11 @@ public class AddInvoiceBase : ComponentBase
         StateHasChanged();
     }
 
+    protected void RemoveInvoiceProduct(ProductInvoiceModel product)
+    {
+        ProductInvoices.Remove(product);
+    }
+
     protected void AddProducts()
     {
         var checkedProducts = Products.Where(p => p.Checked).ToList();
@@ -148,5 +158,40 @@ public class AddInvoiceBase : ComponentBase
 
     }
 
+    protected async Task SaveInvoice()
+    {
+        if (State.ClientSelected == 0) 
+        {
+            Alert.ShowError("Seleccione un cliente antes guardar la factura");
+            return;
+        }
+        if (ProductInvoices.Count == 0) {
+            Alert.ShowError("Seleccione al menos un producto antes de guardar la factura");
+            return;
+        }
+        
+        var invoice = new InvoiceModel
+        {
+            Client = Clients.FirstOrDefault(c => c.ClientId == State.ClientSelected),
+            PriceList = PriceLists.FirstOrDefault(pl => pl.PriceListId == State.PriceListSelected),
+            Products = ProductInvoices
+        };
 
+        State.Saving = true;
+        var request = ApiRequest.BuildPost("Invoices", invoice);
+        var invoiceResult = await ApiClient.Send<DTOResult<InvoiceModel>>(request);
+        State.Saving = false;
+
+        if (invoiceResult.Success)
+        {
+            Alert.ShowSuccess("Factura guardada correctamente");
+            NavigationManager.NavigateTo(Views.Invoices.ToString());
+        }
+        else
+        {
+            Console.WriteLine(invoiceResult.ResultError.ErrorMessage);
+            Alert.ShowError("Ha habido un error al guardar la factura.");
+        }
+
+    }
 }

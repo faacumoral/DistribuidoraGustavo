@@ -6,7 +6,7 @@
 {
     <div class="row form-row">
         <div class="col-12">
-            <div class="card text-white bg-danger" >
+            <div class="card text-white @Class" >
                 <div class="card-body">
                     <p class="card-text text-white">
                         @Message
@@ -18,6 +18,7 @@
 }
 
 @code {
+    protected string Class = "bg-danger";
 
     public Alerts()
     {
@@ -39,14 +40,25 @@
         StateHasChanged();
     }
 
-    public void ShowError(string errorMessage, bool hideAfterTime = true)
+    private void Show(string messsage, bool hideAfterTime = true)
     {
         timer.Stop();
-        Message = errorMessage;
+        Message = messsage;
         StateHasChanged();
 
         if (hideAfterTime)
             timer.Start();
+    }
+    public void ShowSuccess(string message, bool hideAfterTime = true)
+    {
+        Class = "bg-success";
+        Show(message, hideAfterTime);
+    }
+
+    public void ShowError(string errorMessage, bool hideAfterTime = true)
+    {
+        Class = "bg-danger";
+        Show(errorMessage, hideAfterTime);
     }
 
 }
