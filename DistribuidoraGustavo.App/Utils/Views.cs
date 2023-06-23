@@ -5,6 +5,6 @@
         Login,
         Home,
         Invoices,
-        AddInvoice
+        AddOrEditInvoice
     }
 }

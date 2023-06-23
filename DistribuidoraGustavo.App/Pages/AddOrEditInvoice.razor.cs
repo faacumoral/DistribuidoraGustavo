@@ -11,7 +11,7 @@ using System.Timers;
 
 namespace DistribuidoraGustavo.App.Pages;
 
-public class AddInvoiceState
+public class AddOrEditInvoiceState
 {
     public int PriceListSelected { get; set; }
     public int ClientSelected { get; set; }
@@ -21,18 +21,19 @@ public class AddInvoiceState
 
 }
 
-public class AddInvoiceBase : ComponentBase
+public class AddOrEditInvoiceBase : ComponentBase
 {
     [Inject] IJSRuntime jsRuntime { get; set; }
     [Inject] ApiClient ApiClient { get; set; }
     [Inject] NavigationManager NavigationManager { get; set; }
 
+    [Parameter]
     public int InvoiceId { get; set; }
     public Alerts Alert { get; set; }
 
     private System.Timers.Timer timer = default!;
 
-    protected AddInvoiceState State = new();
+    protected AddOrEditInvoiceState State = new();
 
     protected IList<ProductInvoiceModel> ProductInvoices { get; set; } = new List<ProductInvoiceModel>();
     protected IList<UIProductModel> Products { get; set; } = new List<UIProductModel>();
@@ -62,7 +63,26 @@ public class AddInvoiceBase : ComponentBase
         if (priceListResult.Success)
             PriceLists = priceListResult.ResultOk;
 
+        if (InvoiceId != 0)
+            await LoadInvoice();
+
         await base.OnInitializedAsync();
+    }
+
+    protected async Task LoadInvoice()
+    {
+        var invoiceRequest = ApiRequest.BuildGet($"Invoices/{InvoiceId}");
+        var invoiceResult = await ApiClient.Send<DTOResult<InvoiceModel>>(invoiceRequest);
+
+        if (!invoiceResult.Success)
+        {
+            NavigationManager.NavigateTo(Views.Invoices.ToString());
+            return;
+        }
+
+        var invoice = invoiceResult.ResultOk;
+        ClientChange(invoice.Client.ClientId);
+        ProductInvoices = invoice.Products;
     }
 
     private async void SearchProducts(object? source, ElapsedEventArgs e)
@@ -174,11 +194,14 @@ public class AddInvoiceBase : ComponentBase
         {
             Client = Clients.FirstOrDefault(c => c.ClientId == State.ClientSelected),
             PriceList = PriceLists.FirstOrDefault(pl => pl.PriceListId == State.PriceListSelected),
-            Products = ProductInvoices
+            Products = ProductInvoices,
+            InvoiceId = InvoiceId
         };
 
         State.Saving = true;
+
         var request = ApiRequest.BuildPost("Invoices", invoice);
+
         var invoiceResult = await ApiClient.Send<DTOResult<InvoiceModel>>(request);
         State.Saving = false;
 

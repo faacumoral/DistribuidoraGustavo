@@ -9,7 +9,13 @@
          <p>Cliente:</p>
     </div>
     <div class="col-3">
-          <select class="form-control"></select>
+           <select class="form-control" @onchange="(ChangeEventArgs e) => ClientChange(int.Parse(e.Value.ToString()))">
+            <option value="0"> - </option>
+            @foreach (var client in Clients)
+            {
+                <option value="@client.ClientId">@client.Name</option>
+            }
+        </select>
     </div>
     <div class="col-auto me-auto">
          <button class=" btn btn-success" @onclick="GoToAddInvoice">
@@ -18,6 +24,8 @@
     </div>
   </div>
 <hr />
+
+<Spinner Show="State.Searching"></Spinner>
 
 @if (Invoices != null)
 {
@@ -28,7 +36,7 @@
           <th scope="col">Número de factura</th>
           <th scope="col">Importe</th>
           <th scope="col">Fecha</th>
-          <th scope="col">Descripción</th>
+          <th scope="col"></th>
         </tr>
       </thead>
       <tbody>
@@ -39,12 +47,16 @@
                 <td>@invoice.InvoiceNumber</td>
                 <td>$@invoice.TotalAmount</td>
                 <td>@invoice.CreatedDate</td>
-                <td>@invoice.Description</td>
+                <td>
+                    <button class="btn btn-dark" @onclick="() => EditInvoice(invoice)">
+                        Editar &nbsp;
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+                </td>
             </tr>
         }
     
       </tbody>
     </table>
-
 
 }

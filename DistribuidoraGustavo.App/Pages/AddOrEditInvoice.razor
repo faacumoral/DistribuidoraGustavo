@@ -1,7 +1,9 @@
-﻿@page "/addinvoice"
+﻿@page "/addoreditinvoice/{invoiceId:int}"
+@page "/addoreditinvoice"
+
 @using DistribuidoraGustavo.App.Utils
 @using DistribuidoraGustavo.App.Shared;
-@inherits AddInvoiceBase
+@inherits AddOrEditInvoiceBase
 
 <style>
     .spinner-border {
@@ -19,7 +21,14 @@
             <option value="0"> - </option>
             @foreach (var client in Clients)
             {
-                <option value="@client.ClientId">@client.Name</option>
+                @if (State.ClientSelected == client.ClientId)
+                {
+                    <option value="@client.ClientId" selected>@client.Name</option>
+                }
+                else
+                {
+                    <option value="@client.ClientId">@client.Name</option>
+                }
             }
         </select>
     </div>
@@ -38,7 +47,6 @@
                 else 
                 {
                     <option value="@priceList.PriceListId">@priceList.Name</option>
-
                 }
             }
         </select>
@@ -81,7 +89,7 @@
                     <button class="btn btn-success" @onclick="SaveInvoice" disabled="@State.Saving">
                         @if (!State.Saving)
                         {
-                            @("Guardar factura ")
+                            @(InvoiceId == 0 ? "Crear factura " : "Actualizar factura ")
                             <i class="bi bi-check-circle"></i>
                         }
                         else

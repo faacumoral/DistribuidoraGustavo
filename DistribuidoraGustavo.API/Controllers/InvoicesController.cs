@@ -17,11 +17,11 @@ namespace DistribuidoraGustavo.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ListResult<InvoiceModel>> Get()
+        public async Task<ListResult<InvoiceModel>> Get([FromQuery] int? ClientID = 0)
         {
             try
             {
-                var invoices = await _invoiceService.GetAll();
+                var invoices = await _invoiceService.GetAll(ClientID ?? 0);
                 return ListResult<InvoiceModel>.Ok(invoices.ToList());
             }
             catch (Exception ex)
@@ -31,12 +31,27 @@ namespace DistribuidoraGustavo.API.Controllers
             }
         }
 
+        [HttpGet("{invoiceId:int}")]
+        public async Task<DTOResult<InvoiceModel>> Get([FromRoute] int invoiceId)
+        {
+            try
+            {
+                var invoice = await _invoiceService.GetById(invoiceId);
+                return DTOResult<InvoiceModel>.Ok(invoice);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+                return DTOResult<InvoiceModel>.Error(ex);
+            }
+        }
+
         [HttpPost]
         public async Task<DTOResult<InvoiceModel>> Post([FromBody] InvoiceModel invoiceModel)
         {
             try
             {
-                var invoice = await _invoiceService.InsertInvoice(invoiceModel);
+                var invoice = await _invoiceService.UpsertInvoice(invoiceModel);
                 return invoice;
             }
             catch (Exception ex)

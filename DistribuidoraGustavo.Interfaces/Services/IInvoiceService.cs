@@ -5,7 +5,8 @@ namespace DistribuidoraGustavo.Interfaces.Services
 {
     public interface IInvoiceService : IBaseService
     {
-        Task<IReadOnlyList<InvoiceModel>> GetAll();
-        Task<DTOResult<InvoiceModel>> InsertInvoice(InvoiceModel invoice);
+        Task<IReadOnlyList<InvoiceModel>> GetAll(int clientId = 0);
+        Task<DTOResult<InvoiceModel>> UpsertInvoice(InvoiceModel invoice);
+        Task<InvoiceModel> GetById(int invoiceId);
     }
 }
