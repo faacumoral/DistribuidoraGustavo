@@ -2,6 +2,7 @@
 using DistribuidoraGustavo.Interfaces.Models;
 using DistribuidoraGustavo.Interfaces.Services;
 using FMCW.Common.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DistribuidoraGustavo.API.Controllers
@@ -58,6 +59,47 @@ namespace DistribuidoraGustavo.API.Controllers
             {
                 Log.Error(ex);
                 return DTOResult<InvoiceModel>.Error(ex);
+            }
+        }
+
+
+        [HttpGet("{invoiceID:int}/downloadtoken")]
+        public async Task<StringResult> GetDownloadToken([FromRoute] int invoiceID)
+        {
+            try
+            {
+                var token = await _invoiceService.GetDownloadToken(UserId, invoiceID);
+                return StringResult.Ok(token);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+                return StringResult.Error(ex);
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpGet("download")]
+        public async Task<IActionResult> DownloadInvoice([FromQuery] string token)
+        {
+            try
+            {
+                var fileResult = await _invoiceService.DownloadInvoice(token);
+                if (fileResult.Success)
+                {
+                    var file = fileResult.ResultOk;
+                    return File(
+                        file.Content,
+                        file.ContentType,
+                        file.Name);
+                }
+
+                return StatusCode(500, fileResult.ResultError.FriendlyErrorMessage);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+                return StatusCode(500);
             }
         }
 

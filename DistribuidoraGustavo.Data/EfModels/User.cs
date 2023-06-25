@@ -14,4 +14,6 @@ public partial class User
     public string? Password { get; set; }
 
     public bool? Active { get; set; }
+
+    public virtual ICollection<UserToken> UserTokens { get; set; } = new List<UserToken>();
 }

@@ -8,6 +8,7 @@ namespace DistribuidoraGustavo.API.Controllers
     [Route("[controller]")]
     public class BaseController : ControllerBase
     {
+        protected int UserId { get => int.Parse(User.Claims.First(c => c.Type == "IdUsuario").Value); }
 
     }
 }

@@ -10,10 +10,12 @@ namespace DistribuidoraGustavo.Core.Services
     public class InvoiceService : BaseService, IInvoiceService
     {
         private readonly DistribuidoraGustavoContext _context;
-        
-        public InvoiceService(DistribuidoraGustavoContext context)
+        private readonly IPdfService _pdfService;
+        public InvoiceService(
+            DistribuidoraGustavoContext context, IPdfService pdfService)
         {
             _context = context;
+            _pdfService = pdfService;
         }
 
         public async Task<IReadOnlyList<InvoiceModel>> GetAll(int clientId = 0)
@@ -133,5 +135,51 @@ namespace DistribuidoraGustavo.Core.Services
             var insertedUpdatedInvoice = CastEfToModel.ToModel(invoice);
             return insertedUpdatedInvoice;
         }
+
+        public async Task<string> GetDownloadToken(int userId, int invoiceId)
+        {
+            var downloadToken = new UserToken
+            {
+                Data = invoiceId.ToString(),
+                ExpireTime = DateTime.UtcNow.AddMinutes(1),
+                Token = Guid.NewGuid().ToString(),
+                UserId = userId
+            };
+            _context.UserTokens.Add(downloadToken);
+            await _context.SaveChangesAsync();
+            return downloadToken.Token;
+        }
+
+        public async Task<DTOResult<DownloadModel>> DownloadInvoice(string token)
+        {
+            var userToken = await _context.UserTokens.FirstOrDefaultAsync(t => t.Token == token);
+
+            if (userToken == null)
+                return DTOResult<DownloadModel>.Error("Token de descarga inválido");
+
+            if (userToken.ExpireTime < DateTime.UtcNow)
+            {
+                _context.UserTokens.Remove(userToken);
+                await _context.SaveChangesAsync();
+                return DTOResult<DownloadModel>.Error("Token de descarga inválido");
+            }
+
+            var invoiceId = int.Parse(userToken.Data);
+
+            _context.UserTokens.Remove(userToken);
+            await _context.SaveChangesAsync();
+
+            var invoice = await GetById(invoiceId);
+
+            var file = new DownloadModel
+            {
+                Content = await _pdfService.GenerateInvoicePdf(invoice),
+                Name = invoice.InvoiceNumber + ".pdf",
+                ContentType = "application/pdf"
+            };
+
+            return DTOResult<DownloadModel>.Ok(file);
+        }
+
     }
 }

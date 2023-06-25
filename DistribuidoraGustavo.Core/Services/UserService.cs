@@ -1,4 +1,5 @@
 ﻿using DistribuidoraGustavo.Data.EfModels;
+using DistribuidoraGustavo.Interfaces.Models;
 using DistribuidoraGustavo.Interfaces.Parsers;
 using DistribuidoraGustavo.Interfaces.Requests;
 using DistribuidoraGustavo.Interfaces.Responses;

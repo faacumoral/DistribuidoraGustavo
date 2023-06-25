@@ -29,6 +29,8 @@ public partial class DistribuidoraGustavoContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
+    public virtual DbSet<UserToken> UserTokens { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseCollation("SQL_Latin1_General_CP1_CI_AS");
@@ -150,6 +152,20 @@ public partial class DistribuidoraGustavoContext : DbContext
             entity.Property(e => e.Name).IsUnicode(false);
             entity.Property(e => e.Password).IsUnicode(false);
             entity.Property(e => e.Username).IsUnicode(false);
+        });
+
+        modelBuilder.Entity<UserToken>(entity =>
+        {
+            entity.HasKey(e => e.UserTokenId).HasName("PK__UserToke__BD92DEBB0950282C");
+
+            entity.Property(e => e.UserTokenId).HasColumnName("UserTokenID");
+            entity.Property(e => e.ExpireTime).HasColumnType("datetime");
+            entity.Property(e => e.UserId).HasColumnName("UserID");
+
+            entity.HasOne(d => d.User).WithMany(p => p.UserTokens)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UserTokens_UserID");
         });
 
         OnModelCreatingPartial(modelBuilder);

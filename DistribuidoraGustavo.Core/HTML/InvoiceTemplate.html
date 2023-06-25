@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Detalle: {{InvoiceNumber}}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Factura: {{InvoiceNumber}}</h1>
+
+    <div>
+        <h2>Cliente: {{ClientName}}</h2>
+    </div>
+
+    <table>
+        <tr>
+            <th>Cód</th>
+            <th>Descripción</th>
+            <th>Cantidad</th>
+            <th>Precio unitario</th>
+            <th>Total</th>
+        </tr>
+        {{InvoiceProducts}}
+        <tr>
+            <td colspan="4"><strong>Total:</strong></td>
+            <td><strong>${{TotalAmount}}</strong></td>
+        </tr>
+    </table>
+</body>
+</html>

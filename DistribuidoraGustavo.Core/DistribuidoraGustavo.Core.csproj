@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -18,6 +18,15 @@
   <ItemGroup>
     <ProjectReference Include="..\DistribuidoraGustavo.Data\DistribuidoraGustavo.Data.csproj" />
     <ProjectReference Include="..\DistribuidoraGustavo.Interfaces\DistribuidoraGustavo.Interfaces.csproj" />
+	<PackageReference Include="itext7" Version="8.0.0" />
+	<PackageReference Include="itext7.bouncy-castle-adapter" Version="8.0.0" />
+	<PackageReference Include="itext7.pdfhtml" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="HTML\InvoiceTemplate.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

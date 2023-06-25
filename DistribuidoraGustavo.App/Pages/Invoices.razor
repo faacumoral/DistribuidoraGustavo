@@ -17,11 +17,6 @@
             }
         </select>
     </div>
-    <div class="col-auto me-auto">
-         <button class=" btn btn-success" @onclick="GoToAddInvoice">
-            <i class="bi bi-file-earmark-plus"></i>
-            Agregar factura</button>
-    </div>
   </div>
 <hr />
 
@@ -48,9 +43,21 @@
                 <td>$@invoice.TotalAmount</td>
                 <td>@invoice.CreatedDate</td>
                 <td>
-                    <button class="btn btn-dark" @onclick="() => EditInvoice(invoice)">
+                    <button disabled="@State.Processing" class="btn btn-dark" @onclick="() => EditInvoice(invoice)">
                         Editar &nbsp;
-                        <i class="bi bi-pencil-square"></i>
+                        <Spinner Show="@State.Processing" ></Spinner>
+                        @if (State.Processing)
+                        {
+                            <i class="bi bi-pencil-square"></i>
+                        }
+                    </button>
+                    <button disabled="@State.Processing" class="btn btn-success" @onclick="() => DownloadInvoice(invoice)">
+                        Descargar &nbsp;
+                        <Spinner Show="@State.Processing" ></Spinner>
+                        @if (State.Processing)
+                        {
+                            <i class="bi bi-download"></i>
+                        }
                     </button>
                 </td>
             </tr>

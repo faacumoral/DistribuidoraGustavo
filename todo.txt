@@ -5,4 +5,3 @@ ABM listas de precios
 pedir excel de formato
 baja (logica) de facturas
 agregaf favicon
-exportar/descargar factura

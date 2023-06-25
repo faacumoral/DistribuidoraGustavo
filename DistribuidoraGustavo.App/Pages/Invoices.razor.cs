@@ -4,6 +4,7 @@ using DistribuidoraGustavo.App.Utils;
 using DistribuidoraGustavo.Interfaces.Models;
 using FMCW.Common.Results;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace DistribuidoraGustavo.App.Pages;
 
@@ -11,6 +12,7 @@ public class InvoicesState
 {
     public int SelectedClientID { get; set; } = 0;
     public bool Searching { get; set; } = false;
+    public bool Processing { get; set; } = false;
 }
 
 public class InvoicesBase : ComponentBase
@@ -19,12 +21,15 @@ public class InvoicesBase : ComponentBase
 
     [Inject] ApiClient ApiClient { get; set; }
     [Inject] NavigationManager NavigationManager { get; set; }
+    [Inject] IJSRuntime JSRuntime { get; set; }
+    [Inject] IConfiguration Configuration { get; set; }
 
     protected InvoicesState State { get; set; } = new();
 
     protected IList<ClientModel> Clients { get; set; } = new List<ClientModel>();
 
     protected IList<InvoiceModel> Invoices { get; set; }
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -62,14 +67,26 @@ public class InvoicesBase : ComponentBase
         State.Searching = false;
     }
 
-    protected void GoToAddInvoice()
-    {
-        NavigationManager.NavigateTo(Views.AddOrEditInvoice.ToString());
-    }
-
     protected void EditInvoice(InvoiceModel invoice)
     {
         NavigationManager.NavigateTo(Views.AddOrEditInvoice.ToString() + $"/{invoice.InvoiceId}");
+    }
 
+    protected async Task DownloadInvoice(InvoiceModel invoice)
+    {
+        State.Processing = true;
+        var urlToken = $"Invoices/{invoice.InvoiceId}/downloadtoken";
+
+        var tokenResult = await ApiClient.Send<StringResult>(ApiRequest.BuildGet(urlToken));
+
+        if (!tokenResult.Success)
+        {
+            Alert.ShowError("Ha habido un error al descargar el archivo");
+            Console.WriteLine(tokenResult.ResultError.FullException);
+        }
+
+        var urlDownload = $"{Configuration["ApiUrl"]}invoices/download?token={tokenResult.ResultOk}";
+        await JSRuntime.InvokeVoidAsync("eval", $"let _discard_ = open(`{urlDownload}`, `_blank`)");
+        State.Processing = false;
     }
 }
