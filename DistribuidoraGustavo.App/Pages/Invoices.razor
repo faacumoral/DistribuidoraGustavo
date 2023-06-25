@@ -1,6 +1,12 @@
 ﻿@page "/invoices"
 @inherits InvoicesBase
 
+<style>
+    .spinner-border {
+        width:1rem !important;
+        height:1rem !important;
+    }
+</style>
 
 <Alerts @ref="Alert"></Alerts>
 
@@ -46,7 +52,7 @@
                     <button disabled="@State.Processing" class="btn btn-dark" @onclick="() => EditInvoice(invoice)">
                         Editar &nbsp;
                         <Spinner Show="@State.Processing" ></Spinner>
-                        @if (State.Processing)
+                        @if (!State.Processing)
                         {
                             <i class="bi bi-pencil-square"></i>
                         }
@@ -54,7 +60,7 @@
                     <button disabled="@State.Processing" class="btn btn-success" @onclick="() => DownloadInvoice(invoice)">
                         Descargar &nbsp;
                         <Spinner Show="@State.Processing" ></Spinner>
-                        @if (State.Processing)
+                        @if (!State.Processing)
                         {
                             <i class="bi bi-download"></i>
                         }
