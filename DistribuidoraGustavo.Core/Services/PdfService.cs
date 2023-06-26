@@ -2,6 +2,7 @@
 using DistribuidoraGustavo.Interfaces.Models;
 using DistribuidoraGustavo.Interfaces.Services;
 using iText.Html2pdf;
+using iText.Html2pdf.Resolver.Font;
 
 namespace DistribuidoraGustavo.Core.Services
 {

@@ -1,0 +1,40 @@
+﻿@using System.Net.Http.Headers;
+@using Tewr.Blazor.FileReader;
+
+<input type="file" @ref="_input" @onchange="HandleSelected" accept="xls,xlsx" 
+    id="txtInputFile" style="display: none;" />
+
+
+@code {
+    private ElementReference _input;
+
+
+    [Parameter]
+    public EventCallback<MultipartFormDataContent> OnChange { get; set; }
+    [Inject]
+    public IFileReaderService FileReaderService { get; set; }
+    [Inject]
+    public IJSRuntime jsRuntime { get; set; }
+
+    private async Task HandleSelected()
+    {
+        foreach (var file in await FileReaderService.CreateReference(_input).EnumerateFilesAsync())
+        {
+            if (file != null)
+            {
+                var fileInfo = await file.ReadFileInfoAsync();
+                var ms = await file.CreateMemoryStreamAsync(4 * 1024);
+
+                var content = new MultipartFormDataContent();
+                content.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
+                content.Add(new StreamContent(ms, Convert.ToInt32(ms.Length)), "file", fileInfo.Name);
+                await OnChange.InvokeAsync(content);
+            }
+        }
+    }
+
+    public async Task Open()
+    {
+        await jsRuntime.InvokeVoidAsync("ClickElement", "txtInputFile");
+    }
+}

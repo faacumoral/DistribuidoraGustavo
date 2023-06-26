@@ -4,5 +4,6 @@ namespace DistribuidoraGustavo.Interfaces.Services;
 
 public interface IProductService : IBaseService
 {
-    public Task<IList<ProductModel>> GetAll(string filter = "", int? priceListId = 0);
+    Task<IList<ProductModel>> GetAll(string filter = "", int? priceListId = 0);
+    Task<IList<PricedProductModel>> GetWithPrices(string filter, int? priceListId);
 }

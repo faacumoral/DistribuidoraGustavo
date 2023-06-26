@@ -1,0 +1,36 @@
+﻿@page "/clients"
+@inherits ClientsBase
+
+<Spinner Show="Searching"></Spinner>
+
+@if (!Searching)
+{
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Nombre (prefijo)</th>
+          <th scope="col">Lista de precios</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var client in Clients)
+        {
+            <tr>
+                <td>@client.ClientId</td>
+                <td>@client.Name ('@client.InvoicePrefix')</td>
+                <td>@client.DefaultPriceList.Name</td>
+                <td>
+                    <button class="btn btn-dark" @onclick="() => EditClient(client)">
+                        Editar &nbsp;
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+    
+      </tbody>
+    </table>
+
+}

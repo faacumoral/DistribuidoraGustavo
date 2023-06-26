@@ -4,5 +4,6 @@ namespace DistribuidoraGustavo.Interfaces.Services;
 
 public interface IClientService : IBaseService
 {
-    public Task<IList<ClientModel>> GetAll();
+    Task<IList<ClientModel>> GetAll();
+    Task<ClientModel> GetById(int clientId);
 }

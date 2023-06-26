@@ -2,6 +2,7 @@
 using DistribuidoraGustavo.App.Utils;
 using FMCW.Common.Results;
 using Microsoft.AspNetCore.Components;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
@@ -72,8 +73,50 @@ namespace DistribuidoraGustavo.App.Http
                 Success = false,
                 ResultOperation = ResultOperation.Error,
             };
+        }
 
 
+        public async Task<Tresult> SendFormData<Tresult>(string url, MultipartFormDataContent formData)
+            where Tresult : IBaseErrorResult, new()
+        {
+            var jwtToken = await _sessionStorage.GetJwt();
+
+            // TODO add expiration validation too
+            if (string.IsNullOrEmpty(jwtToken))
+            {
+                // TODO save state
+                _navigationManager.NavigateTo(Views.Login.ToString());
+                return new Tresult()
+                {
+                    ResultError = ErrorResult.Build("El usuario no esta logeado"),
+                    Success = false,
+                    ResultOperation = ResultOperation.Unauthorized,
+                };
+            }
+
+            var requestMessage = new HttpRequestMessage()
+            {
+                Method = new HttpMethod("POST"),
+                RequestUri = new Uri(_client.BaseAddress.OriginalString + url),
+                Content = formData,
+                Version = HttpVersion.Version10
+            };
+
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwtToken);
+            
+            var response = await _client.SendAsync(requestMessage);
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonResponse = await response.Content.ReadFromJsonAsync<Tresult>();
+                return jsonResponse;
+            }
+
+            return new Tresult()
+            {
+                ResultError = ErrorResult.Build(await response.Content.ReadAsStringAsync()),
+                Success = false,
+                ResultOperation = ResultOperation.Error,
+            };
         }
     }
 }

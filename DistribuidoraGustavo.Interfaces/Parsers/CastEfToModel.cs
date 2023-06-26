@@ -27,7 +27,8 @@ namespace DistribuidoraGustavo.Interfaces.Parsers
             {
                 Name = client.Name,
                 ClientId = client.ClientId,
-                DefaultPriceListId = client.DefaultPriceListId
+                DefaultPriceList = client.DefaultPriceList?.ToModel(),
+                InvoicePrefix = client.InvoicePrefix
             };
 
         public static ProductModel ToModel(this Product product)

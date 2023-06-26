@@ -127,7 +127,7 @@ public class AddOrEditInvoiceBase : ComponentBase
     protected void ClientChange(int clientId)
     {
         State.ClientSelected = clientId;
-        State.PriceListSelected = Clients.FirstOrDefault(c => c.ClientId == clientId)?.DefaultPriceListId ?? 0;
+        State.PriceListSelected = Clients.FirstOrDefault(c => c.ClientId == clientId)?.DefaultPriceList?.PriceListId ?? 0;
         SearchProducts(null, null);
     }
 

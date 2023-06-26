@@ -5,6 +5,9 @@
         Login,
         Home,
         Invoices,
-        AddOrEditInvoice
+        AddOrEditInvoice,
+        Clients,
+        AddOrEditClient,
+        Prices
     }
 }

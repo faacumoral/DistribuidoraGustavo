@@ -2,6 +2,8 @@ agregar logs
 deploys 
 ABM clientes
 ABM listas de precios
-pedir excel de formato
+
 baja (logica) de facturas
-agregaf favicon
+agregar favicon
+
+importar excel para lista de precios

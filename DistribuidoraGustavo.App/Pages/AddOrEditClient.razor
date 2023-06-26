@@ -1,0 +1,34 @@
+﻿@page "/addoreditclient/{ClientId:int}"
+@page "/addoreditclient"
+
+@inherits AddOrEditClientBase
+
+<div class="row">
+    <div class="col-4">
+        <p>Nombre:</p>
+        <input @bind="@Client.Name" class="form-control" />
+    </div>
+
+    <div class="col-2">
+        <p>Prefijo:</p>
+        <input disabled="@Client.ClientId != 0" @bind="@Client.InvoicePrefix" class="form-control" />
+    </div>
+
+    <div class="col-4">
+        <p>Lista de precios default:</p>
+        <select class="form-control" disabled="@Searching"
+            @onchange="(ChangeEventArgs e) => Client.DefaultPriceList.PriceListId = int.Parse(e.Value.ToString())">
+            @foreach (var priceList in PriceLists)
+            {
+                if (Client.DefaultPriceList.PriceListId == priceList.PriceListId)
+                {
+                    <option value="@priceList.PriceListId" selected>@priceList.Name</option>
+                }
+                else
+                {
+                    <option value="@priceList.PriceListId">@priceList.Name</option>
+                }
+            }
+        </select>
+    </div>
+</div>

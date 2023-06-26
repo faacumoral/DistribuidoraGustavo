@@ -15,7 +15,7 @@ namespace DistribuidoraGustavo.Core.Services
             _context = context;
         }
 
-        public async Task<IList<ProductModel>> GetAll(string filter = "", int? priceListId = 0)
+        private async Task<IList<ProductModel>> SearchProducts(string filter, int quantity = 100)
         {
             var productsDb = _context.Products.Where(p => p.Active == true);
 
@@ -23,15 +23,24 @@ namespace DistribuidoraGustavo.Core.Services
             {
                 filter = filter.ToLower();
                 productsDb = productsDb
-                .Where(p => 
+                .Where(p =>
                    p.Name.ToLower().Contains(filter)
                 || p.Code.ToLower().Contains(filter)
                 || (p.Description != null && p.Description!.ToLower().Contains(filter))
                 );
             }
-            var products = await productsDb.Take(100).ToListAsync();
+
+            var products = await productsDb.Take(quantity).ToListAsync();
 
             var productsModel = products.Select(CastEfToModel.ToModel).ToList();
+
+            return productsModel;
+        }
+
+
+        public async Task<IList<ProductModel>> GetAll(string filter = "", int? priceListId = 0)
+        {
+            var productsModel = await SearchProducts(filter, 100);
 
             if (priceListId != null && productsModel.Count > 0)
             {
@@ -52,6 +61,49 @@ namespace DistribuidoraGustavo.Core.Services
             }
 
             return productsModel;
+        }
+
+        public async Task<IList<PricedProductModel>> GetWithPrices(string filter, int? priceListId)
+        {
+            var pricedProducts = new List<PricedProductModel>();
+            var priceListsId = new List<int>();
+
+            var productsModel = await SearchProducts(filter, 300);
+
+            if (priceListId == null || priceListId == 0)
+                priceListsId = await _context.PriceLists.Select(pl => pl.PriceListId).ToListAsync();
+            else
+                priceListsId.Add(priceListId.Value);
+
+            var productsIds = productsModel.Select(pm => pm.ProductId).ToList();
+
+            // get all prices for the products
+            var prices = await _context.ProductsPriceLists
+                    .Where(ppl => priceListsId.Contains(ppl.PriceListId) && productsIds.Contains(ppl.ProductId))
+                    .Include(ppl => ppl.PriceList)
+                    .ToListAsync();
+
+            foreach (var product in productsModel)
+            {
+                var pricedProductModel = new PricedProductModel
+                {
+                    ProductId = product.ProductId,
+                    Code = product.Code,
+                    Description = product.Description,
+                    Name = product.Name,
+                    Prices = prices.Where(p => p.ProductId == product.ProductId).Select(
+                        pr => new ProductPriceModel
+                        { 
+                            Price = pr.Price,
+                            PriceListModel = pr.PriceList.ToModel()
+                        }).ToList()
+                    };
+
+                pricedProducts.Add(pricedProductModel);
+            }
+
+            return pricedProducts;
+
         }
     }
 }

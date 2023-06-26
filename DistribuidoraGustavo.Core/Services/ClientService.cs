@@ -22,8 +22,16 @@ namespace DistribuidoraGustavo.Core.Services
 
         public async Task<IList<ClientModel>> GetAll()
         {
-            var clientsDb = await _context.Clients.ToListAsync();
+            var clientsDb = await _context.Clients.Include(c => c.DefaultPriceList).ToListAsync();
             return clientsDb.Select(CastEfToModel.ToModel).ToList();
+        }
+
+        public async Task<ClientModel> GetById(int clientId)
+        {
+            var client = await _context.Clients.Include(c => c.DefaultPriceList)
+                .FirstOrDefaultAsync(c => c.ClientId == clientId);
+
+            return client.ToModel();
         }
     }
 }

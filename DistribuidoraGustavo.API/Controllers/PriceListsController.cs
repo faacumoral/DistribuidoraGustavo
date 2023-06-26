@@ -29,5 +29,14 @@ namespace DistribuidoraGustavo.API.Controllers
                 return ListResult<PriceListModel>.Error(ex);
             }
         }
+
+        [HttpPost("uploadFile")]
+        public async Task UploadFile(IFormFile file)
+        {
+            var a = 5;
+
+        
+        
+        }
     }
 }

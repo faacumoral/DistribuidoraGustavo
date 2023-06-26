@@ -1,9 +1,10 @@
 ﻿namespace DistribuidoraGustavo.Interfaces.Models;
 
-public class ClientModel
+public class ClientModel : BaseModel
 {
     public int ClientId { get; set; }
-    public int? DefaultPriceListId { get; set; }
+    public PriceListModel DefaultPriceList { get; set; }
     public string Name { get; set; }
+    public string InvoicePrefix { get; set; }
 
 }

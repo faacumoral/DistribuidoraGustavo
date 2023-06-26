@@ -1,0 +1,81 @@
+﻿@page "/prices"
+@inherits PricesBase
+
+<Spinner Show="@State.Processing"></Spinner>
+
+<diva class="row">
+    <Alerts @ref="Alert"></Alerts>
+</diva>
+
+
+
+<HiddenFileInput 
+    OnChange="UploadFile"
+    @ref="FileInput"
+></HiddenFileInput>
+
+<div class="row">
+
+    <div class="col-1">
+        Lista
+    </div>
+    <div class="col-3">
+        <select class="form-control" disabled="@State.Processing"
+        @onchange="(ChangeEventArgs e) => PriceListChanged(int.Parse(e.Value.ToString()))">
+            @foreach (var priceList in PriceLists)
+            {
+                if (State.PriceListSelected == priceList.PriceListId)
+                {
+                    <option value="@priceList.PriceListId" selected>@priceList.Name</option>
+                }
+                else
+                {
+                    <option value="@priceList.PriceListId">@priceList.Name</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="col-1">
+        Producto
+    </div>
+    <div class="col-4">
+
+        <SearchInput 
+            Disabled="@State.Processing"
+            OnSearch="SearchProducts"
+            OnValueChanged="(string newValue) => State.ProductFilter = newValue"
+            SearchValue="@State.ProductFilter"
+            @ref="SearchInput"
+        ></SearchInput>
+
+    </div>
+
+    <div class="col-2">
+        <button class="btn btn-success" @onclick="() => FileInput.Open()">
+            Importar Excel
+        </button>
+    </div>
+</div>
+
+
+@if (!State.Processing)
+{
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Nombre (prefijo)</th>
+          <th scope="col">Lista de precios</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var product in Products)
+        {
+            <tr>
+                <td>@product.Code</td>
+            </tr>
+        }
+      </tbody>
+    </table>
+}

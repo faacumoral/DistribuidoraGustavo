@@ -29,5 +29,20 @@ namespace DistribuidoraGustavo.API.Controllers
                 return ListResult<ClientModel>.Error(ex);
             }
         }
+
+        [HttpGet("{clientId:int}")]
+        public async Task<DTOResult<ClientModel>> GetById([FromRoute] int clientId)
+        {
+            try
+            {
+                var client = await _clientService.GetById(clientId);
+                return DTOResult<ClientModel>.Ok(client);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+                return DTOResult<ClientModel>.Error(ex);
+            }
+        }
     }
 }
