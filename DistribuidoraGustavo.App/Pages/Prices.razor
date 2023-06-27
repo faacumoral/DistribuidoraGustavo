@@ -1,27 +1,24 @@
 ﻿@page "/prices"
 @inherits PricesBase
 
-<Spinner Show="@State.Processing"></Spinner>
-
 <diva class="row">
     <Alerts @ref="Alert"></Alerts>
 </diva>
-
-
 
 <HiddenFileInput 
     OnChange="UploadFile"
     @ref="FileInput"
 ></HiddenFileInput>
 
-<div class="row">
 
+<div class="row">
     <div class="col-1">
         Lista
     </div>
     <div class="col-3">
         <select class="form-control" disabled="@State.Processing"
         @onchange="(ChangeEventArgs e) => PriceListChanged(int.Parse(e.Value.ToString()))">
+            <option value="0">Todas</option>
             @foreach (var priceList in PriceLists)
             {
                 if (State.PriceListSelected == priceList.PriceListId)
@@ -39,7 +36,6 @@
         Producto
     </div>
     <div class="col-4">
-
         <SearchInput 
             Disabled="@State.Processing"
             OnSearch="SearchProducts"
@@ -57,16 +53,27 @@
     </div>
 </div>
 
+<Spinner Show="@State.Processing"></Spinner>
 
 @if (!State.Processing)
 {
+    <hr />
     <table class="table table-striped">
-      <thead>
-        <tr>
-          <th scope="col">ID</th>
-          <th scope="col">Nombre (prefijo)</th>
-          <th scope="col">Lista de precios</th>
-          <th scope="col"></th>
+        <thead>
+            <tr>
+                <th scope="col">Código</th>
+                <th scope="col">Descripción</th>
+                @if (State.PriceListSelected == 0)
+                {
+                    @foreach (var priceList in PriceLists.OrderBy(pl => pl.PriceListId))
+                    {
+                        <th scope="col">@priceList.Name</th>
+                    }
+                }
+                else
+                {
+                    <th scope="col">@PriceLists.FirstOrDefault(pl => pl.PriceListId == State.PriceListSelected)?.Name</th>
+                }
         </tr>
       </thead>
       <tbody>
@@ -74,6 +81,11 @@
         {
             <tr>
                 <td>@product.Code</td>
+                <td>@product.Description</td>
+                @foreach (var prices in product.Prices.OrderBy(p => p.PriceListModel.PriceListId))
+                {
+                    <td>@prices.Price</td>
+                }
             </tr>
         }
       </tbody>

@@ -6,4 +6,5 @@ public interface IPriceListService : IBaseService
 {
     public Task<IList<PriceListModel>> GetAll();
 
+    Task<IList<string>> ProcessFile(Stream stream);
 }

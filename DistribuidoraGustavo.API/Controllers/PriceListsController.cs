@@ -31,12 +31,19 @@ namespace DistribuidoraGustavo.API.Controllers
         }
 
         [HttpPost("uploadFile")]
-        public async Task UploadFile(IFormFile file)
+        public async Task<ListResult<string>> UploadFile([FromForm]IFormFile file)
         {
-            var a = 5;
-
-        
-        
+            try
+            {
+                using Stream fs = file.OpenReadStream();
+                var result = await _priceListService.ProcessFile(fs);
+                return ListResult<string>.Ok(result.ToList());
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+                return ListResult<string>.Error(ex);
+            }
         }
     }
 }

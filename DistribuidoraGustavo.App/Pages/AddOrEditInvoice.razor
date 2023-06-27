@@ -123,7 +123,7 @@
                     }
                     @foreach (var product in Products)
                     {
-                        <tr @onclick="() => product.Checked = !product.Checked" style="cursor:pointer;">
+                        <tr title="@product.Name" @onclick="() => product.Checked = !product.Checked" style="cursor:pointer;">
                             <td style="width:10%;">
                                 <label style="display: inline-block; width: 100%;">
                                     <input type="checkbox" @bind="product.Checked"/>

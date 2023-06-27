@@ -18,9 +18,13 @@
   <ItemGroup>
     <ProjectReference Include="..\DistribuidoraGustavo.Data\DistribuidoraGustavo.Data.csproj" />
     <ProjectReference Include="..\DistribuidoraGustavo.Interfaces\DistribuidoraGustavo.Interfaces.csproj" />
+    <PackageReference Include="EPPlus" Version="6.2.6" />
+    <PackageReference Include="ExcelDataReader" Version="3.6.0" />
+    <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />
 	<PackageReference Include="itext7" Version="8.0.0" />
 	<PackageReference Include="itext7.bouncy-castle-adapter" Version="8.0.0" />
 	<PackageReference Include="itext7.pdfhtml" Version="5.0.0" />
+	<PackageReference Include="NPOI" Version="2.6.0" />
   </ItemGroup>
 
   <ItemGroup>

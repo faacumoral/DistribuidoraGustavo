@@ -69,3 +69,6 @@ a, .btn-link {
     margin-bottom: 10px;
 }
 
+body {
+    font-size: 13px !important;
+}

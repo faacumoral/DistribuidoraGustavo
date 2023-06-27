@@ -115,6 +115,7 @@ public partial class DistribuidoraGustavoContext : DbContext
             entity.Property(e => e.Active)
                 .IsRequired()
                 .HasDefaultValueSql("((1))");
+            entity.Property(e => e.BasePrice).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.Code).IsUnicode(false);
             entity.Property(e => e.Description).IsUnicode(false);
             entity.Property(e => e.Name).IsUnicode(false);

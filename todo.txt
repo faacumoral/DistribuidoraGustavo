@@ -6,4 +6,4 @@ ABM listas de precios
 baja (logica) de facturas
 agregar favicon
 
-importar excel para lista de precios
+

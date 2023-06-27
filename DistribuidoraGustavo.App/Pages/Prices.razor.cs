@@ -45,16 +45,18 @@ public class PricesBase : ComponentBase
 
         State.Processing = false;
 
+        await SearchProducts();
+
         await base.OnInitializedAsync();
     }
 
-    protected void PriceListChanged(int priceListId)
+    protected async Task PriceListChanged(int priceListId)
     {
         State.PriceListSelected = priceListId;
-        SearchProducts();
+        await SearchProducts();
     }
 
-    protected async void SearchProducts()
+    protected async Task SearchProducts()
     {
         State.Processing = true;
         StateHasChanged();
@@ -77,8 +79,27 @@ public class PricesBase : ComponentBase
 
     protected async void UploadFile(MultipartFormDataContent file)
     {
-        await ApiClient.SendFormData<BoolResult>("PriceLists/uploadFile", file);
+        State.Processing = true;
+        StateHasChanged();
+        var result = await ApiClient.SendFormData<ListResult<string>>("PriceLists/uploadFile", file);
+        State.Processing = false;
+        StateHasChanged();
+        if (result.Success)
+        {
+            Alert.ShowSuccess("El archivo se procesó correctamente");
+            foreach (var message in result.ResultOk)
+            {
+                Console.WriteLine(message);
+            }
+        }
+        else
+        {
+            Alert.ShowError("Ha habido un error al procesar el archivo");
+            Console.WriteLine(result.ResultError.FullException);
+        }
         file.Dispose();
+
+
     }
 
 }

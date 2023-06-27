@@ -4,5 +4,6 @@
     [Code]          VARCHAR(MAX) NOT NULL,
     [Name]          VARCHAR(MAX) NOT NULL,
     [Description]   VARCHAR(MAX),
-    [Active]        BIT NOT NULL DEFAULT 1
+    [Active]        BIT NOT NULL DEFAULT 1,
+    [BasePrice]     DECIMAL(10,2) NOT NULL DEFAULT 0
 )
