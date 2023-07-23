@@ -8,6 +8,8 @@
         AddOrEditInvoice,
         Clients,
         AddOrEditClient,
-        Prices
+        Prices,
+        Products,
+        AddOrEditProduct
     }
 }

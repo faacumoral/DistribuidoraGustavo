@@ -30,6 +30,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Pages\AddOrEditProduct.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
     <Content Update="wwwroot\css\toast.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

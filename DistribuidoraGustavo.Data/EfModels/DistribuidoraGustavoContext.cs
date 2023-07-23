@@ -17,6 +17,8 @@ public partial class DistribuidoraGustavoContext : DbContext
 
     public virtual DbSet<Client> Clients { get; set; }
 
+    public virtual DbSet<ImportedFile> ImportedFiles { get; set; }
+
     public virtual DbSet<Invoice> Invoices { get; set; }
 
     public virtual DbSet<InvoicesProduct> InvoicesProducts { get; set; }
@@ -49,6 +51,14 @@ public partial class DistribuidoraGustavoContext : DbContext
             entity.HasOne(d => d.DefaultPriceList).WithMany(p => p.Clients)
                 .HasForeignKey(d => d.DefaultPriceListId)
                 .HasConstraintName("FK_Clients_PriceListID");
+        });
+
+        modelBuilder.Entity<ImportedFile>(entity =>
+        {
+            entity.HasKey(e => e.ImportedFileId).HasName("PK__tmp_ms_x__0000074915542E58");
+
+            entity.Property(e => e.ImportedFileId).HasColumnName("ImportedFileID");
+            entity.Property(e => e.DateTime).HasColumnType("datetime");
         });
 
         modelBuilder.Entity<Invoice>(entity =>

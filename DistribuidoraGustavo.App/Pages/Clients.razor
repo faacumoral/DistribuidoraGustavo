@@ -3,6 +3,11 @@
 
 <Spinner Show="Searching"></Spinner>
 
+<button class="btn btn-success" @onclick="AddNewClient">
+    Agregar cliente &nbsp;
+    <i class="bi bi-person-plus-fill" ></i>
+</button>
+<hr />
 @if (!Searching)
 {
     <table class="table table-striped">

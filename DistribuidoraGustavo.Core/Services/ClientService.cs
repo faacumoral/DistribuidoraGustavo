@@ -2,6 +2,7 @@
 using DistribuidoraGustavo.Interfaces.Models;
 using DistribuidoraGustavo.Interfaces.Parsers;
 using DistribuidoraGustavo.Interfaces.Services;
+using FMCW.Common.Results;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -31,6 +32,37 @@ namespace DistribuidoraGustavo.Core.Services
             var client = await _context.Clients.Include(c => c.DefaultPriceList)
                 .FirstOrDefaultAsync(c => c.ClientId == clientId);
 
+            return client.ToModel();
+        }
+
+        public async Task<DTOResult<ClientModel>> UpdateClient(ClientModel clientModel)
+        {
+            var client = await _context.Clients.FirstOrDefaultAsync(c => c.ClientId == clientModel.ClientId);
+            if (client is null)
+                return DTOResult<ClientModel>.Error("El cliente no existe");
+
+            client.Name = clientModel.Name;
+            client.DefaultPriceListId = clientModel.DefaultPriceList.PriceListId;
+
+            _context.SaveChanges();
+            return client.ToModel();
+        }
+
+        public async Task<DTOResult<ClientModel>> InsertClient(ClientModel clientModel)
+        {
+            var prefixList = await _context.Clients.Select(c => c.InvoicePrefix).ToListAsync(); 
+	       
+            clientModel.InvoicePrefix = clientModel.InvoicePrefix.TrimEnd('-');
+            if (prefixList.Contains(clientModel.InvoicePrefix))
+                return DTOResult<ClientModel>.Error("El prefijo ya esxiste");
+
+            var client = new Client
+            {
+                Name = clientModel.Name,
+                DefaultPriceListId = clientModel.DefaultPriceList.PriceListId,
+            };
+
+            _context.SaveChanges();
             return client.ToModel();
         }
     }

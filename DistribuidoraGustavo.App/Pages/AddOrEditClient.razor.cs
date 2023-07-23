@@ -1,4 +1,6 @@
 ﻿using DistribuidoraGustavo.App.Http;
+using DistribuidoraGustavo.App.Shared;
+using DistribuidoraGustavo.App.Utils;
 using DistribuidoraGustavo.Interfaces.Models;
 using FMCW.Common.Results;
 using Microsoft.AspNetCore.Components;
@@ -16,15 +18,16 @@ public class AddOrEditClientBase : ComponentBase
 
     [Parameter] public int ClientId { get; set; }
 
+    public Alerts Alert { get; set; }
     public ClientModel Client { get; set; } = new ();
 
     public IList<PriceListModel> PriceLists { get; set; } = new List<PriceListModel>();
 
-    public bool Searching { get; set; } = false;
+    public bool Processing { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
-        Searching = true;
+        Processing = true;
 
         Client.ClientId = ClientId;
 
@@ -44,14 +47,26 @@ public class AddOrEditClientBase : ComponentBase
             Client.DefaultPriceList = PriceLists.FirstOrDefault();
         }
 
-        Searching = false;
+        Processing = false;
 
         await base.OnInitializedAsync();
     }
 
-    protected void SaveClient()
-    { 
-        
+    protected async Task SaveClient()
+    {
+        var request = ApiRequest.BuildPost("Clients", Client);
+        Processing = true;
+        var clientResult = await ApiClient.Send<DTOResult<ClientModel>>(request);
+        Processing = false;
+
+        if (clientResult.Success)
+        {
+            NavigationManager.NavigateTo(Views.Clients.ToString());
+        }
+        else
+        {
+            Alert.ShowError(clientResult.ResultError.FriendlyErrorMessage);
+        }
     }
 
 }

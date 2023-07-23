@@ -1,4 +1,5 @@
 ﻿using DistribuidoraGustavo.Core.Shared;
+using DistribuidoraGustavo.Data.EfModels;
 using DistribuidoraGustavo.Interfaces.Models;
 using DistribuidoraGustavo.Interfaces.Services;
 using FMCW.Common.Results;
@@ -47,6 +48,37 @@ namespace DistribuidoraGustavo.API.Controllers
             {
                 Log.Error(ex);
                 return ListResult<PricedProductModel>.Error(ex);
+            }
+        }
+
+
+        [HttpPost]
+        public async Task<DTOResult<ProductModel>> Upsert([FromBody] ProductModel model)
+        {
+            try
+            {
+                var productResult = await _productService.Upsert(model);
+                return productResult;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+                return DTOResult<ProductModel>.Error(ex);
+            }
+        }
+
+        [HttpGet("{ProductId:int}")]
+        public async Task<DTOResult<ProductModel>> Get([FromRoute] int ProductId)
+        {
+            try
+            {
+                var product = await _productService.GetById(ProductId);
+                return DTOResult<ProductModel>.Ok(product);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+                return DTOResult<ProductModel>.Error(ex);
             }
         }
     }

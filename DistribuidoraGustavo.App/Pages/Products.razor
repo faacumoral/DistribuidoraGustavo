@@ -1,0 +1,64 @@
+﻿@page "/products"
+
+@inherits ProductsBase
+
+<diva class="row">
+    <Alerts @ref="Alert"></Alerts>
+</diva>
+
+<div class="row">
+    <div class="col-1">
+        Producto
+    </div>
+    <div class="col-4">
+        <SearchInput 
+            Disabled="@State.Processing"
+            OnSearch="SearchProducts"
+            OnValueChanged="(string newValue) => State.Filter = newValue"
+            SearchValue="@State.Filter"
+            @ref="SearchInput"
+        ></SearchInput>
+    </div>
+
+    <div class="col-4">
+        <button class="btn btn-success" @onclick=AddProduct>
+            Agregar producto &nbsp;
+            <i class="bi bi-clipboard-plus"></i>
+        </button>
+    </div>
+
+</div>
+
+<Spinner Show="@State.Processing"></Spinner>
+
+@if (!State.Processing)
+{
+    <hr />
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Código</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Descripción</th>
+                <th scope="col">Precio lista</th>
+                <th scope="col"></th>
+            </tr>
+      </thead>
+      <tbody>
+        @foreach (var product in Products)
+        {
+            <tr>
+                <td>@product.Code</td>
+                <td>@product.Name</td>
+                <td>@product.Description</td>
+                <td>@product.BasePrice</td>
+                <td>
+                    <button class="btn btn-dark" @onclick="() => UpdateProduct(product)">
+                        Editar &nbsp;  <i class="bi bi-pencil-square"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+      </tbody>
+    </table>
+}

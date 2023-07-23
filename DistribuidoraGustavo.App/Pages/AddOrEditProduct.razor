@@ -1,0 +1,49 @@
+﻿@page "/addoreditproduct/{ProductId:int}"
+@page "/addoreditproduct"
+
+@inherits AddOrEditProductBase
+
+<Alerts @ref=Alert></Alerts>
+
+<div class="row form-row">
+    <div class="col-2">
+        <span>Código:</span>
+    </div>
+    <div class="col-4">
+        <input @bind="@Product.Code" class="form-control" disabled="@(Processing || ProductId != 0 )" />
+    </div>
+
+    <div class="col-2">
+        <span>Nombre:</span>
+    </div>
+    <div class="col-4">
+        <input @bind="@Product.Name" class="form-control" disabled="@Processing" />
+    </div>
+
+</div>
+<div class="row form-row">
+    <div class="col-2">
+        <span>Descripción:</span>
+    </div>
+    <div class="col-4">
+        <input @bind="@Product.Description" class="form-control" disabled="@Processing" />
+    </div>
+
+    <div class="col-2">
+        <span>Precio base:</span>
+    </div>
+    <div class="col-4">
+        <DecimalInput HasChanged="(decimal n) => Product.BasePrice = n"
+                      Value="Product.BasePrice"
+                      Disabled="Processing"></DecimalInput>
+    </div>
+</div>
+
+<div class="rowform-row">
+    <div class="col-2">
+        <button class="btn btn-success" @onclick="SaveProduct">
+            Guardar &nbsp;
+            <i class="bi bi-check-circle"></i>
+        </button>
+    </div>
+</div>

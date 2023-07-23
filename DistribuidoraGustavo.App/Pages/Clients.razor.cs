@@ -1,6 +1,7 @@
 ﻿using DistribuidoraGustavo.App.Http;
 using DistribuidoraGustavo.App.Shared;
 using DistribuidoraGustavo.App.Utils;
+using DistribuidoraGustavo.Data.EfModels;
 using DistribuidoraGustavo.Interfaces.Models;
 using FMCW.Common.Results;
 using Microsoft.AspNetCore.Components;
@@ -40,4 +41,8 @@ public class ClientsBase : ComponentBase
         NavigationManager.NavigateTo(Views.AddOrEditClient.ToString() + "/" + client.ClientId);
     }
 
+    protected void AddNewClient()
+    {
+        NavigationManager.NavigateTo(Views.AddOrEditClient.ToString());
+    }
 }

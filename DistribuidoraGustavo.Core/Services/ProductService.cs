@@ -2,17 +2,23 @@
 using DistribuidoraGustavo.Interfaces.Models;
 using DistribuidoraGustavo.Interfaces.Parsers;
 using DistribuidoraGustavo.Interfaces.Services;
+using FMCW.Common.Results;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using NPOI.SS.Formula.Functions;
+using System.ComponentModel;
 
 namespace DistribuidoraGustavo.Core.Services
 {
     public class ProductService : IProductService
     {
         private readonly DistribuidoraGustavoContext _context;
+        private readonly IPriceListService _priceListService;
 
-        public ProductService(DistribuidoraGustavoContext context)
+        public ProductService(DistribuidoraGustavoContext context, IPriceListService priceListService)
         {
             _context = context;
+            _priceListService = priceListService;
         }
 
         private async Task<IList<ProductModel>> SearchProducts(string filter, int quantity = 100)
@@ -104,6 +110,52 @@ namespace DistribuidoraGustavo.Core.Services
 
             return pricedProducts;
 
+        }
+
+        public async Task<DTOResult<ProductModel>> Upsert(ProductModel model)
+        {
+            var product = await _context.Products.Include(p => p.ProductsPriceLists).FirstOrDefaultAsync(p => p.ProductId == model.ProductId);
+
+            if (product == null)
+            {
+                if (string.IsNullOrEmpty(model.Code) || string.IsNullOrEmpty(model.Name))
+                    return DTOResult<ProductModel>.Error($"Código y nombre son campos obligatorios");
+
+                var existingCode = _context.Products.Any(p => p.Code == model.Code);
+                if (existingCode)
+                    return DTOResult<ProductModel>.Error($"El código '{model.Code}' ya esta registrado");
+
+                product = new Product
+                {
+                    BasePrice = model.BasePrice,
+                    Name = model.Name,
+                    Description = model.Description,
+                    Code = model.Code,
+                    Active = true,
+                };
+
+                _context.Products.Add(product);
+            }
+            else
+            { 
+                product.BasePrice = model.BasePrice;
+                product.Name = model.Name;
+                product.Description = model.Description;
+                _context.Products.Update(product);
+            }
+
+            var pricesList = await _context.PriceLists.ToListAsync();
+            _priceListService.CalculatePrices(product, pricesList);
+
+            await _context.SaveChangesAsync();
+
+            return DTOResult<ProductModel>.Ok(product.ToModel());
+        }
+
+        public async Task<ProductModel> GetById(int productId)
+        { 
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == productId);
+            return product.ToModel();
         }
     }
 }

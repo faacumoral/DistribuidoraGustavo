@@ -36,7 +36,7 @@ namespace DistribuidoraGustavo.API.Controllers
             try
             {
                 using Stream fs = file.OpenReadStream();
-                var result = await _priceListService.ProcessFile(fs);
+                var result = await _priceListService.ProcessFile(file.FileName, fs);
                 return ListResult<string>.Ok(result.ToList());
             }
             catch (Exception ex)
