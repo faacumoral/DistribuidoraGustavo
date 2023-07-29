@@ -181,5 +181,18 @@ namespace DistribuidoraGustavo.Core.Services
             return DTOResult<DownloadModel>.Ok(file);
         }
 
+        public async Task<BoolResult> DeleteInvoice(int invoiceId)
+        {
+            var invoice = await _context.Invoices.FirstOrDefaultAsync(i => i.InvoiceId == invoiceId);
+            if (invoice == null) return BoolResult.Error("La factura no existe");
+
+            invoice.Active = false;
+
+            _context.Invoices.Update(invoice);
+
+            await _context.SaveChangesAsync();
+
+            return BoolResult.Ok();
+        }
     }
 }

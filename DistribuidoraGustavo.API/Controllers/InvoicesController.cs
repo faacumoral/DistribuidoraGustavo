@@ -47,6 +47,21 @@ namespace DistribuidoraGustavo.API.Controllers
             }
         }
 
+        [HttpDelete("{invoiceId:int}")]
+        public async Task<BoolResult> DeleteInvoice([FromRoute] int invoiceId)
+        {
+            try
+            {
+                var result = await _invoiceService.DeleteInvoice(invoiceId);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+                return BoolResult.Error(ex);
+            }
+        }
+
         [HttpPost]
         public async Task<DTOResult<InvoiceModel>> Post([FromBody] InvoiceModel invoiceModel)
         {

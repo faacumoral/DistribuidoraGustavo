@@ -1,13 +1,10 @@
 agregar logs
 
  
-ABM clientes
 ABM listas de precios
 
-baja (logica) de facturas
-agregar favicon
 
-Cambiar "cargando"
+
 
 
 

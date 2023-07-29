@@ -2,7 +2,6 @@
 using DistribuidoraGustavo.Interfaces.Models;
 using DistribuidoraGustavo.Interfaces.Parsers;
 using DistribuidoraGustavo.Interfaces.Services;
-using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using Microsoft.EntityFrameworkCore;
 
 namespace DistribuidoraGustavo.Core.Services

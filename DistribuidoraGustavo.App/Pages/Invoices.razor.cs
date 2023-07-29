@@ -89,4 +89,25 @@ public class InvoicesBase : ComponentBase
         await JSRuntime.InvokeVoidAsync("eval", $"let _discard_ = open(`{urlDownload}`, `_blank`)");
         State.Processing = false;
     }
+
+    protected async Task DeleteInvoice(InvoiceModel invoice)
+    {
+        State.Processing = true;
+        var url = $"Invoices/{invoice.InvoiceId}";
+
+        var result = await ApiClient.Send<BoolResult>(ApiRequest.BuildDelete(url));
+        State.Processing = false;
+
+        if (!result.Success)
+        {
+            Alert.ShowError("Ha habido un error al eliminar la factura");
+            Console.WriteLine(result.ResultError.FullException);
+        }
+        else
+        {
+            await SearchInvoicesForClient();
+        }
+    }
+
+    
 }

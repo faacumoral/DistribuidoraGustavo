@@ -44,7 +44,7 @@ namespace DistribuidoraGustavo.Core.Services
             client.Name = clientModel.Name;
             client.DefaultPriceListId = clientModel.DefaultPriceList.PriceListId;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return client.ToModel();
         }
 
@@ -54,15 +54,17 @@ namespace DistribuidoraGustavo.Core.Services
 	       
             clientModel.InvoicePrefix = clientModel.InvoicePrefix.TrimEnd('-');
             if (prefixList.Contains(clientModel.InvoicePrefix))
-                return DTOResult<ClientModel>.Error("El prefijo ya esxiste");
+                return DTOResult<ClientModel>.Error("El prefijo ya existe");
 
             var client = new Client
             {
                 Name = clientModel.Name,
                 DefaultPriceListId = clientModel.DefaultPriceList.PriceListId,
+                InvoicePrefix = clientModel.InvoicePrefix
             };
 
-            _context.SaveChanges();
+            _context.Add(client);
+            await _context.SaveChangesAsync();
             return client.ToModel();
         }
     }

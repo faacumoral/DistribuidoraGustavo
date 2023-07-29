@@ -10,5 +10,6 @@ namespace DistribuidoraGustavo.Interfaces.Services
         Task<InvoiceModel> GetById(int invoiceId);
         Task<string> GetDownloadToken(int userId, int invoiceId);
         Task<DTOResult<DownloadModel>> DownloadInvoice(string token);
+        Task<BoolResult> DeleteInvoice(int invoiceId);
     }
 }

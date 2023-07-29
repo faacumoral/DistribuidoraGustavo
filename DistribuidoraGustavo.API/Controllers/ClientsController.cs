@@ -48,7 +48,6 @@ namespace DistribuidoraGustavo.API.Controllers
         [HttpPost]
         public async Task<DTOResult<ClientModel>> UpsertClient([FromBody] ClientModel clientModel)
         {
-            // validar que los datos esten todos: Name, DefaultPriceList y Prefix (solamente si es ALTA para este ultimo)
             if ((clientModel is null) || string.IsNullOrEmpty(clientModel.Name) || clientModel.DefaultPriceList is null)
                 return DTOResult<ClientModel>.Error("No se pudieron cargar los datos del cliente");
             if ((clientModel.ClientId != 0) && string.IsNullOrEmpty(clientModel.InvoicePrefix))
@@ -66,13 +65,6 @@ namespace DistribuidoraGustavo.API.Controllers
                 Log.Error(ex);
                 return DTOResult<ClientModel>.Error(ex);
             }
-            // si existe, actualizar solo nombre y lista de precios
-            // si no existe,
-            // validar que el prefijo no exista ya para otro cliente
-            // eliminar '-' del final, si presente
-            // guardar en la DB
-            // en ambos casos devolver el objeto creado/modificado
-            // manejar errores
         }
     }
 }
