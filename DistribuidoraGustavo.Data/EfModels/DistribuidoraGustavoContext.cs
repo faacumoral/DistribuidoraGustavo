@@ -29,6 +29,8 @@ public partial class DistribuidoraGustavoContext : DbContext
 
     public virtual DbSet<ProductsPriceList> ProductsPriceLists { get; set; }
 
+    public virtual DbSet<Transaction> Transactions { get; set; }
+
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UserToken> UserTokens { get; set; }
@@ -42,6 +44,7 @@ public partial class DistribuidoraGustavoContext : DbContext
             entity.HasKey(e => e.ClientId).HasName("PK__Clients__05623063FF67CADC");
 
             entity.Property(e => e.ClientId).HasColumnName("CLientId");
+            entity.Property(e => e.ActualBalance).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.DefaultPriceListId).HasColumnName("DefaultPriceListID");
             entity.Property(e => e.InvoicePrefix)
                 .HasMaxLength(255)
@@ -151,6 +154,25 @@ public partial class DistribuidoraGustavoContext : DbContext
                 .HasForeignKey(d => d.ProductId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Products_PriceLists_ProductID");
+        });
+
+        modelBuilder.Entity<Transaction>(entity =>
+        {
+            entity.HasKey(e => e.TransactionId).HasName("PK__Transact__55433A4BDE3513B8");
+
+            entity.Property(e => e.TransactionId).HasColumnName("TransactionID");
+            entity.Property(e => e.Amount).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.ClientId).HasColumnName("ClientID");
+            entity.Property(e => e.Date)
+                .HasDefaultValueSql("(getutcdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Description).HasMaxLength(255);
+            entity.Property(e => e.Type).HasMaxLength(255);
+
+            entity.HasOne(d => d.Client).WithMany(p => p.Transactions)
+                .HasForeignKey(d => d.ClientId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Transaction_ClientID");
         });
 
         modelBuilder.Entity<User>(entity =>

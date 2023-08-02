@@ -1,4 +1,4 @@
-﻿namespace DistribuidoraGustavo.Core.Shared
+﻿namespace DistribuidoraGustavo.Interfaces.Shared
 {
 #warning TBD
     public static class Log

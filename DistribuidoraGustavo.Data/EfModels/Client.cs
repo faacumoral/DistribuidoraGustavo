@@ -13,7 +13,11 @@ public partial class Client
 
     public int? DefaultPriceListId { get; set; }
 
+    public decimal ActualBalance { get; set; }
+
     public virtual PriceList? DefaultPriceList { get; set; }
 
     public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
+
+    public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
 }

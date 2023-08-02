@@ -1,0 +1,90 @@
+﻿@page "/balances"
+@inherits BalancesBase
+
+<diva class="row">
+    <Alerts @ref="Alert"></Alerts>
+</diva>
+
+<div class="row">
+    <div class="col-1">
+        Cliente
+    </div>
+    <div class="col-3">
+        <select class="form-control" disabled="@State.Processing"
+        @onchange="(ChangeEventArgs e) =>
+            {
+                ClientChange(int.Parse(e.Value.ToString()));
+            }">
+            <option value="0">Todos</option>
+            @foreach (var client in Clients)
+            {
+                if (State.Client?.ClientId == client.ClientId)
+                {
+                    <option value="@client.ClientId" selected>@client.Name</option>
+                }
+                else
+                {
+                    <option value="@client.ClientId">@client.Name</option>
+                }
+            }
+        </select>
+    </div>
+
+    <div class="col-2">
+        
+    </div>
+    <div class="col-3">
+        <NumberInput Value="@State.Amount"
+                     Disabled="@State.Processing"
+                     HasChanged="(int val) => State.Amount= val"></NumberInput>
+    </div>
+
+    <div class="col-3">
+        <button class="btn btn-success" @onclick="SaveNewTransaction">
+            <i class="bi bi-check-circle"></i>
+            &nbsp; Nuevo pago
+        </button>
+    </div>
+   
+</div>
+
+<Spinner Show="@State.Processing"></Spinner>
+
+@if (!State.Processing)
+{
+    <hr />
+
+    <div class="row">
+        @if (State.Client?.ClientId > 0)
+        {
+            <h4>El cliente @State.Client.Name @(State.Client.ActualBalance > 0 ? "debe": "tiene a favor") $ @(Math.Abs(State.Client.ActualBalance))</h4>
+        }
+        else
+        {
+            <p>-</p>
+            
+        }
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Cliente</th>
+                <th scope="col">Fecha</th>
+                <th scope="col">Importe</th>
+                <th scope="col">Descripción</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var transaction in Transactions)
+        {
+            <tr>
+                <td>@transaction.Client.Name</td>
+                <td>@transaction.Date</td>
+                <td>$ @transaction.Amount</td>
+                <td>@transaction.Description</td>
+            </tr>
+        }
+      </tbody>
+    </table>
+}

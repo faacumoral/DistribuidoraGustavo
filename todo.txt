@@ -4,6 +4,11 @@ agregar logs
 ABM listas de precios
 
 
+Mejorar buscador: que haga split de filtro y busque separado
+Baja de productos
+Editar precio al hacer click en input
+Importar cantidad por bulto de excel 
+Agregar boton "Agregar bulto" en Alta de facturas
 
 
 

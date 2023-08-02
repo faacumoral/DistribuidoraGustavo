@@ -1,5 +1,6 @@
 ﻿using DistribuidoraGustavo.Data.EfModels;
 using DistribuidoraGustavo.Interfaces.Models;
+using DistribuidoraGustavo.Interfaces.Shared;
 
 namespace DistribuidoraGustavo.Interfaces.Parsers
 {
@@ -28,7 +29,8 @@ namespace DistribuidoraGustavo.Interfaces.Parsers
                 Name = client.Name,
                 ClientId = client.ClientId,
                 DefaultPriceList = client.DefaultPriceList?.ToModel(),
-                InvoicePrefix = client.InvoicePrefix
+                InvoicePrefix = client.InvoicePrefix,
+                ActualBalance = client.ActualBalance,
             };
 
         public static ProductModel ToModel(this Product product)
@@ -61,8 +63,20 @@ namespace DistribuidoraGustavo.Interfaces.Parsers
                 InvoiceNumber = invoice.InvoiceNumber,
                 PriceList = invoice.PriceList?.ToModel(),
                 Products = invoice.InvoicesProducts?.Select(ToModel).ToList(),
-                CreatedDate = invoice.CreatedDate.ToString("dd/MM/yyyy"),
+                CreatedDate = invoice.CreatedDate.DateToString(),
                 Description = invoice.Description
+            };
+
+
+        public static TransactionModel ToModel(this Transaction transaction)
+            => new()
+            {
+                Amount = transaction.Amount,
+                Date = transaction.Date.DateToString(),
+                TransactionId = transaction.TransactionId,
+                Client = transaction.Client?.ToModel(),
+                Description = transaction.Description,
+                Type = transaction.Type,
             };
     }
 }

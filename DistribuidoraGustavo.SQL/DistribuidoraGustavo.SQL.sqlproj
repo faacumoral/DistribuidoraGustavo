@@ -68,6 +68,7 @@
     <Build Include="Tables\Invoices_Products.sql" />
     <Build Include="Tables\UserTokens.sql" />
     <Build Include="Tables\ImportedFiles.sql" />
+    <Build Include="Tables\Transactions.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Local.DistribuidoraGustavo.SQL.publish.xml" />

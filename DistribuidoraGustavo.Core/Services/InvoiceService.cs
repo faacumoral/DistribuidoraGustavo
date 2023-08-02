@@ -10,12 +10,17 @@ namespace DistribuidoraGustavo.Core.Services
     public class InvoiceService : BaseService, IInvoiceService
     {
         private readonly DistribuidoraGustavoContext _context;
+        private readonly ITransactionService _transactionService;
+
         private readonly IPdfService _pdfService;
         public InvoiceService(
-            DistribuidoraGustavoContext context, IPdfService pdfService)
+            DistribuidoraGustavoContext context, 
+            IPdfService pdfService,
+            ITransactionService transactionService)
         {
             _context = context;
             _pdfService = pdfService;
+            _transactionService = transactionService;
         }
 
         public async Task<IReadOnlyList<InvoiceModel>> GetAll(int clientId = 0)
@@ -75,6 +80,7 @@ namespace DistribuidoraGustavo.Core.Services
                     .Max(i => int.Parse(i.Replace(client.InvoicePrefix + "-", ""))) + 1;
                 }
 
+                var invoiceNumber = $"{client.InvoicePrefix}-{nextInvoiceNumber}";
                 invoice = new Invoice
                 {
                     Active = true,
@@ -82,7 +88,7 @@ namespace DistribuidoraGustavo.Core.Services
                     CreatedDate = DateTime.UtcNow,
                     Description = invoiceModel.Description,
                     PriceListId = invoiceModel.PriceList.PriceListId,
-                    InvoiceNumber = $"{client.InvoicePrefix}-{nextInvoiceNumber}",
+                    InvoiceNumber = invoiceNumber,
                     InvoicesProducts = invoiceModel.Products.Select(p => new InvoicesProduct
                     {
                         Amount = p.Amount,
@@ -93,16 +99,20 @@ namespace DistribuidoraGustavo.Core.Services
                 };
 
                 _context.Invoices.Add(invoice);
+                await _transactionService.CreateInvoiceTransaction(client.ClientId, invoiceModel.TotalAmount, invoiceNumber);
             }
             else
             {
                 invoice = await _context.Invoices.Include(i => i.InvoicesProducts)
                                                  .FirstOrDefaultAsync(i => i.InvoiceId == invoiceModel.InvoiceId);
-
+                
                 if (invoice == null)
                     return DTOResult<InvoiceModel>.Error("Factura inválida");
 
                 invoice.Description = invoiceModel.Description;
+
+                var oldInvoiceAmount = invoice.InvoicesProducts.Sum(ip => ip.Amount);
+                client.ActualBalance -= oldInvoiceAmount;
 
                 _context.InvoicesProducts.RemoveRange(invoice.InvoicesProducts);
 
@@ -129,8 +139,12 @@ namespace DistribuidoraGustavo.Core.Services
                         _context.InvoicesProducts.Update(invoiceProduct);
                     }
                 }
+
+                await _transactionService.UpdateInvoiceTransaction(client.ClientId, invoice.InvoiceNumber, invoiceModel.TotalAmount);
             }
 
+            client.ActualBalance += invoiceModel.TotalAmount;
+            _context.Update(client);
             await _context.SaveChangesAsync();
             var insertedUpdatedInvoice = CastEfToModel.ToModel(invoice);
             return insertedUpdatedInvoice;
@@ -183,10 +197,15 @@ namespace DistribuidoraGustavo.Core.Services
 
         public async Task<BoolResult> DeleteInvoice(int invoiceId)
         {
-            var invoice = await _context.Invoices.FirstOrDefaultAsync(i => i.InvoiceId == invoiceId);
+            var invoice = await _context.Invoices.Include(i => i.Client).Include(i => i.InvoicesProducts)
+                .FirstOrDefaultAsync(i => i.InvoiceId == invoiceId);
+
             if (invoice == null) return BoolResult.Error("La factura no existe");
 
             invoice.Active = false;
+
+            invoice.Client.ActualBalance -= invoice.ToModel().TotalAmount;
+            await _transactionService.DeleteInvoiceTransaction(invoice.ClientId, invoice.InvoiceNumber);
 
             _context.Invoices.Update(invoice);
 

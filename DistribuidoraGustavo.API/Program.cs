@@ -20,7 +20,7 @@ builder.Services.AddTransient<IPriceListService, PriceListService>();
 builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddTransient<IPdfService, PdfService>();
 builder.Services.AddTransient<IExcelService, ExcelService>();
-
+builder.Services.AddTransient<ITransactionService, TransactionService>();
 
 builder.InitConfig();
 builder.AddJwtManager();

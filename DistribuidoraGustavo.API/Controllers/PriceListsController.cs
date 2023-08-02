@@ -1,4 +1,4 @@
-﻿using DistribuidoraGustavo.Core.Shared;
+﻿using DistribuidoraGustavo.Interfaces.Shared;
 using DistribuidoraGustavo.Interfaces.Models;
 using DistribuidoraGustavo.Interfaces.Services;
 using FMCW.Common.Results;

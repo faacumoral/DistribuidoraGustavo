@@ -10,6 +10,7 @@
         AddOrEditClient,
         Prices,
         Products,
-        AddOrEditProduct
+        AddOrEditProduct,
+        Balances
     }
 }

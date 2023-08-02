@@ -1,4 +1,4 @@
-﻿using DistribuidoraGustavo.Core.Shared;
+﻿using DistribuidoraGustavo.Interfaces.Shared;
 using DistribuidoraGustavo.Data.EfModels;
 using DistribuidoraGustavo.Interfaces.Models;
 using DistribuidoraGustavo.Interfaces.Services;

@@ -125,7 +125,7 @@ namespace DistribuidoraGustavo.Core.Services
         {
             foreach (var priceList in pricesLists)
             {
-                var newPrice = product.BasePrice + (product.BasePrice * priceList.Percent / 100);
+                var newPrice = Math.Ceiling(product.BasePrice + (product.BasePrice * priceList.Percent / 100));
 
                 var productPrice = product.ProductsPriceLists.FirstOrDefault(ppl => ppl.PriceListId == priceList.PriceListId);
 
