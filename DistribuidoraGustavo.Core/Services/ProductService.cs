@@ -97,6 +97,7 @@ namespace DistribuidoraGustavo.Core.Services
                     Code = product.Code,
                     Description = product.Description,
                     Name = product.Name,
+                    QuantityPerBox = product.QuantityPerBox,
                     Prices = prices.Where(p => p.ProductId == product.ProductId).Select(
                         pr => new ProductPriceModel
                         { 

@@ -41,6 +41,7 @@ namespace DistribuidoraGustavo.Interfaces.Parsers
                 Name = product.Name,
                 ProductId = product.ProductId,
                 BasePrice = product.BasePrice,
+                QuantityPerBox = product.QuantityPerBox
             };
 
         public static ProductInvoiceModel ToModel(this InvoicesProduct invoicesProducts)

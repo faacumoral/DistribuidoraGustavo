@@ -83,6 +83,7 @@ namespace DistribuidoraGustavo.Core.Services
                 var product = products.FirstOrDefault(p => p.Code == excelProduct.Code);
 
                 var priceCasted = decimal.TryParse(excelProduct.Price, out decimal basePrice);
+                var quantityCasted = int.TryParse(excelProduct.Quantity, out int quantity);
 
                 if (product == null)
                 {
@@ -92,7 +93,8 @@ namespace DistribuidoraGustavo.Core.Services
                         Code = excelProduct.Code,
                         Description = excelProduct.Name,
                         Name = excelProduct.Name,
-                        BasePrice = basePrice
+                        BasePrice = basePrice,
+                        QuantityPerBox = quantityCasted ? quantity : 0
                     };
                     _context.Products.Add(product);
                 }
@@ -102,6 +104,7 @@ namespace DistribuidoraGustavo.Core.Services
                     product.Name = excelProduct.Name;
                     product.Description = excelProduct.Name;
                     product.BasePrice = basePrice;
+                    product.QuantityPerBox = quantityCasted ? quantity : 0;
                     _context.Products.Update(product);
                 }
 

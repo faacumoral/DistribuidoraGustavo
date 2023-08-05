@@ -51,5 +51,5 @@ public static class Extensions
     public static void Navigate(this NavigationManager navigation, Views view)
         => navigation.NavigateTo(view.ToString());
 
-    public static string ToShortString(this string str) => str.Length > 20 ? str?[..20] : str;
+    public static string ToShortString(this string str, int lenght = 20) => str.Length > lenght ? str?[..lenght] : str;
 }

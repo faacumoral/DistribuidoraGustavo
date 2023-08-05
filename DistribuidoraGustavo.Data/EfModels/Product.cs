@@ -17,6 +17,8 @@ public partial class Product
 
     public decimal BasePrice { get; set; }
 
+    public int QuantityPerBox { get; set; }
+
     public virtual ICollection<InvoicesProduct> InvoicesProducts { get; set; } = new List<InvoicesProduct>();
 
     public virtual ICollection<ProductsPriceList> ProductsPriceLists { get; set; } = new List<ProductsPriceList>();

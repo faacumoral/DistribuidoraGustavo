@@ -148,7 +148,7 @@ public class AddOrEditInvoiceBase : ComponentBase
         ProductInvoices.Remove(product);
     }
 
-    protected void AddProducts()
+    private void AddProducts(bool unit = true)
     {
         var checkedProducts = Products.Where(p => p.Checked).ToList();
 
@@ -165,17 +165,26 @@ public class AddOrEditInvoiceBase : ComponentBase
                     Name = product.Name,
                     ProductId = product.ProductId,
                     UnitPrice = product.UnitPrice,
-                    Amount = product.UnitPrice,
-                    Quantity = 1
+                    Amount = product.UnitPrice * (unit ? 1 : product.QuantityPerBox),
+                    Quantity = unit ? 1 : product.QuantityPerBox
                 });
             }
             else
             {
-                productInvoice.Quantity += 1;
-                productInvoice.Amount += product.UnitPrice;
+                productInvoice.Quantity += unit ? 1 : product.QuantityPerBox;
+                productInvoice.Amount += product.UnitPrice * (unit ? 1 : product.QuantityPerBox);
             }
         }
+    }
 
+    protected void AddProductsUnit()
+    {
+        AddProducts(true);
+    }
+
+    protected void AddProductsBox()
+    {
+        AddProducts(false);
     }
 
     protected async Task SaveInvoice()

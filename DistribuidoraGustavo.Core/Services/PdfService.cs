@@ -41,7 +41,9 @@ namespace DistribuidoraGustavo.Core.Services
                 .ReplaceToken("InvoiceNumber", invoice.InvoiceNumber)
                 .ReplaceToken("ClientName", invoice.Client.Name)
                 .ReplaceToken("TotalAmount", invoice.TotalAmount.ToString())
-                .ReplaceToken("InvoiceProducts", productsHtml);
+                .ReplaceToken("InvoiceProducts", productsHtml)
+                .ReplaceToken("Date", DateTime.UtcNow.DateToString())
+                .ReplaceToken("ActualBalance", invoice.Client.ActualBalance.ToString());
 
             return GeneratePdfFromHtml(htmlTemplate);
         }

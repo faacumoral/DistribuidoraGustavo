@@ -114,6 +114,7 @@
                         <th></th>
                         <th scope="col">Cód.</th>
                         <th scope="col">Nombre</th>
+                        <th scope="col">Bulto</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -128,8 +129,9 @@
                                 <label style="display: inline-block; width: 100%;">
                                     <input type="checkbox" @bind="product.Checked"/>
                                 </label></td>
-                            <td>@product.Code</td>
+                            <td>@product.Code.ToShortString(7)</td>
                             <td>@product.Name.ToShortString()</td>
+                            <td>@product.QuantityPerBox</td>
                         </tr>
                     }
 
@@ -137,8 +139,9 @@
             </table>
         </div>
 
-        <div class="col-1" style="font-size: 30px; align-self: auto; cursor: pointer;" @onclick="AddProducts">
-            <i class="bi bi-chevron-double-right" title="Agregar productos seleccionados"></i>
+        <div class="col-1" style="font-size: 30px; align-self: auto; cursor: pointer;" >
+            <i class="bi bi-chevron-double-right" title="Agregar productos seleccionados" @onclick="AddProductsUnit"></i>
+            <i class="bi bi-box-seam" title="Agregar bulto del productos seleccionados" @onclick="AddProductsBox"></i>
         </div>
 
         <div class="col-7">
