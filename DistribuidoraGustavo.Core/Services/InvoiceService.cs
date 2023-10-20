@@ -31,8 +31,8 @@ namespace DistribuidoraGustavo.Core.Services
                 .Include(i => i.Client)
                 .Include(i => i.InvoicesProducts).ThenInclude(ip => ip.Product)
                 .Include(i => i.PriceList)
-                .Take(50)
                 .OrderByDescending(i => i.CreatedDate)
+                .Take(50)
             .ToListAsync();
 
             var invoicesModel = invoices.Select(i => i.ToModel()).ToList();
