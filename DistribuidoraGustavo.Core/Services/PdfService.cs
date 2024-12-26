@@ -3,6 +3,7 @@ using DistribuidoraGustavo.Interfaces.Models;
 using DistribuidoraGustavo.Interfaces.Services;
 using iText.Html2pdf;
 using iText.Html2pdf.Resolver.Font;
+using System.Globalization;
 
 namespace DistribuidoraGustavo.Core.Services
 {
@@ -37,13 +38,16 @@ namespace DistribuidoraGustavo.Core.Services
                     </tr>";
             }
 
+            var argCulture = new CultureInfo("es-AR");
+
             htmlTemplate = htmlTemplate
                 .ReplaceToken("InvoiceNumber", invoice.InvoiceNumber)
                 .ReplaceToken("ClientName", invoice.Client.Name)
-                .ReplaceToken("TotalAmount", invoice.TotalAmount.ToString())
+                .ReplaceToken("OldBalance", (invoice.Client.ActualBalance - invoice.TotalAmount).ToString("N0", argCulture))
+                .ReplaceToken("TotalAmount", invoice.TotalAmount.ToString("N0", argCulture))
                 .ReplaceToken("InvoiceProducts", productsHtml)
                 .ReplaceToken("Date", DateTime.UtcNow.DateToString())
-                .ReplaceToken("ActualBalance", invoice.Client.ActualBalance.ToString());
+                .ReplaceToken("ActualBalance", invoice.Client.ActualBalance.ToString("N0", argCulture));
 
             return GeneratePdfFromHtml(htmlTemplate);
         }
