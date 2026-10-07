@@ -1,7 +1,7 @@
 ﻿using DistribuidoraGustavo.Interfaces.Models;
 using DistribuidoraGustavo.Interfaces.Requests;
 using DistribuidoraGustavo.Interfaces.Responses;
-using FMCW.Common.Results;
+using DistribuidoraGustavo.Interfaces.Results;
 
 namespace DistribuidoraGustavo.Interfaces.Services;
 

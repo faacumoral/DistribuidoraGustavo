@@ -1,6 +1,6 @@
 ﻿using Blazored.SessionStorage;
 using DistribuidoraGustavo.App.Utils;
-using FMCW.Common.Results;
+using DistribuidoraGustavo.Interfaces.Results;
 using Microsoft.AspNetCore.Components;
 using System.Net;
 using System.Net.Http.Headers;

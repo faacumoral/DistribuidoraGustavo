@@ -1,5 +1,5 @@
 ﻿using DistribuidoraGustavo.Interfaces.Models;
-using FMCW.Common.Results;
+using DistribuidoraGustavo.Interfaces.Results;
 
 namespace DistribuidoraGustavo.Interfaces.Services
 {

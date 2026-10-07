@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DistribuidoraGustavo.Core.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DistribuidoraGustavo.API.Controllers
@@ -8,7 +9,7 @@ namespace DistribuidoraGustavo.API.Controllers
     [Route("[controller]")]
     public class BaseController : ControllerBase
     {
-        protected int UserId { get => int.Parse(User.Claims.First(c => c.Type == "IdUsuario").Value); }
+        protected int UserId { get => int.Parse(User.Claims.First(c => c.Type == JwtManager.USER_ID_CLAIM).Value); }
 
     }
 }

@@ -1,5 +1,6 @@
-﻿using DistribuidoraGustavo.Interfaces.Settings;
-using FMCW.Common.Jwt;
+﻿using DistribuidoraGustavo.Core.Services;
+using DistribuidoraGustavo.Interfaces.Services;
+using DistribuidoraGustavo.Interfaces.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;

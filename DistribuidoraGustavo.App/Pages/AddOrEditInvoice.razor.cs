@@ -3,7 +3,7 @@ using DistribuidoraGustavo.App.Shared;
 using DistribuidoraGustavo.App.UIModels;
 using DistribuidoraGustavo.App.Utils;
 using DistribuidoraGustavo.Interfaces.Models;
-using FMCW.Common.Results;
+using DistribuidoraGustavo.Interfaces.Results;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;

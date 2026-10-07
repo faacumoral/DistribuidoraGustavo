@@ -1,12 +1,12 @@
-﻿using DistribuidoraGustavo.Data.EfModels;
+﻿using DistribuidoraGustavo.Core.Security;
+using DistribuidoraGustavo.Data.EfModels;
 using DistribuidoraGustavo.Interfaces.Models;
 using DistribuidoraGustavo.Interfaces.Parsers;
 using DistribuidoraGustavo.Interfaces.Requests;
 using DistribuidoraGustavo.Interfaces.Responses;
 using DistribuidoraGustavo.Interfaces.Services;
 using DistribuidoraGustavo.Interfaces.Settings;
-using FMCW.Common.Jwt;
-using FMCW.Common.Results;
+using DistribuidoraGustavo.Interfaces.Results;
 using Microsoft.EntityFrameworkCore;
 
 namespace DistribuidoraGustavo.Core.Services;
@@ -28,7 +28,7 @@ public class UserService : BaseService, IUserService
     {
         var encryptPassword = ApplicationSettings.Config.EncryptKey;
 
-        var encodedPassword = FMCW.Seguridad.Encriptador.Encriptar(request.Password, encryptPassword);
+        var encodedPassword = PasswordEncryptor.Encrypt(request.Password, encryptPassword);
 
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username && u.Password == encodedPassword);
 
@@ -42,7 +42,7 @@ public class UserService : BaseService, IUserService
 
         return DTOResult<LoginResponse>.Ok(new LoginResponse
         {
-            Jwt = jwt.Jwt,
+            Jwt = jwt,
             User = user.ToModel()
         });
     }

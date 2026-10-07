@@ -1,7 +1,7 @@
 using DistribuidoraGustavo.Interfaces.Requests;
 using DistribuidoraGustavo.Interfaces.Responses;
 using DistribuidoraGustavo.Interfaces.Services;
-using FMCW.Common.Results;
+using DistribuidoraGustavo.Interfaces.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

@@ -2,7 +2,7 @@
 using DistribuidoraGustavo.App.Http;
 using DistribuidoraGustavo.App.Utils;
 using DistribuidoraGustavo.Interfaces.Responses;
-using FMCW.Common.Results;
+using DistribuidoraGustavo.Interfaces.Results;
 using Microsoft.AspNetCore.Components;
 
 namespace DistribuidoraGustavo.App.Pages;

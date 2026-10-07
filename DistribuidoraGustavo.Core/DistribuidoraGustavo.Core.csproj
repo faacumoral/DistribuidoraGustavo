@@ -7,15 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="FMCW.Common">
-      <HintPath>..\Dlls\FMCW.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="FMCW.Seguridad.Encriptador">
-      <HintPath>..\Dlls\FMCW.Seguridad.Encriptador.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\DistribuidoraGustavo.Data\DistribuidoraGustavo.Data.csproj" />
     <ProjectReference Include="..\DistribuidoraGustavo.Interfaces\DistribuidoraGustavo.Interfaces.csproj" />
     <PackageReference Include="EPPlus" Version="6.2.6" />
@@ -25,6 +16,7 @@
 	<PackageReference Include="itext7.bouncy-castle-adapter" Version="8.0.0" />
 	<PackageReference Include="itext7.pdfhtml" Version="5.0.0" />
 	<PackageReference Include="NPOI" Version="2.6.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.36.0" />
   </ItemGroup>
 
   <ItemGroup>

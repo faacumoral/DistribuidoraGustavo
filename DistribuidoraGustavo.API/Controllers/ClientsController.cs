@@ -1,7 +1,7 @@
 ﻿using DistribuidoraGustavo.Interfaces.Shared;
 using DistribuidoraGustavo.Interfaces.Models;
 using DistribuidoraGustavo.Interfaces.Services;
-using FMCW.Common.Results;
+using DistribuidoraGustavo.Interfaces.Results;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DistribuidoraGustavo.API.Controllers
