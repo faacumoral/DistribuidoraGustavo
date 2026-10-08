@@ -8,8 +8,8 @@ Recetas para los cambios más frecuentes, siguiendo las convenciones existentes.
 
 Ejemplo: agregar `Phone` a clientes.
 
-1. **SQL**: agregar la columna en [Tables/Clients.sql](../DistribuidoraGustavo.SQL/Tables/Clients.sql) (nullable o con default, porque ya hay datos).
-2. **EF**: publicar y re-scaffoldear ([base-de-datos.md](base-de-datos.md#cómo-cambiar-el-esquema)), o editar a mano `Client.cs` y `OnModelCreating` respetando el estilo generado.
+1. **Entidad**: agregar la propiedad en [Client.cs](../DistribuidoraGustavo.Data/EfModels/Client.cs) y, si hace falta, su configuración en `OnModelCreating` (nullable o con default, porque ya hay datos).
+2. **Migración**: generarla, revisarla y aplicarla en local ([base-de-datos.md](base-de-datos.md#cómo-cambiar-el-esquema)).
 3. **Modelo**: agregar la propiedad en [ClientModel.cs](../DistribuidoraGustavo.Interfaces/Models/ClientModel.cs).
 4. **Mapper**: agregarla en `ToModel(this Client)` de [CastEfToModel.cs](../DistribuidoraGustavo.Interfaces/Parsers/CastEfToModel.cs).
 5. **Servicio**: asignarla en `InsertClient` y `UpdateClient` de [ClientService.cs](../DistribuidoraGustavo.Core/Services/ClientService.cs) (el mapeo modelo → entidad es manual).
@@ -49,7 +49,7 @@ Si se necesita un verbo que `ApiRequest` no tiene (PUT, PATCH), agregar el `Buil
 
 Ejemplo: el ABM de listas de precios pendiente.
 
-1. **SQL** + **EF** (si la tabla es nueva; `PriceLists` ya existe).
+1. **Entidad + migración** (si la tabla es nueva; `PriceLists` ya existe).
 2. **Modelo** en `Interfaces/Models` (heredar de `BaseModel` si va a viajar dentro de un `DTOResult<T>`; `PriceListModel` hoy no hereda).
 3. **Mapper** `ToModel` en `CastEfToModel`.
 4. **Interfaz + servicio**; registrar el servicio en [Program.cs](../DistribuidoraGustavo.API/Program.cs#L16) con `AddTransient` si es nuevo.
@@ -98,4 +98,4 @@ No hay tests automatizados. Para validar un cambio:
 dotnet build DistribuidoraGustavo.sln
 ```
 
-(El proyecto `.sqlproj` requiere MSBuild de Visual Studio con SSDT; con `dotnet build` conviene compilar los `.csproj` de API y App por separado.) Después, probar a mano el flujo afectado con API y App levantadas, o los endpoints desde Swagger en `https://localhost:7109/swagger`.
+Después, probar a mano el flujo afectado con API y App levantadas, o los endpoints desde Swagger en `https://localhost:7109/swagger`.

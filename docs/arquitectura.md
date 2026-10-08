@@ -36,12 +36,11 @@ flowchart TD
 
 | Proyecto | Responsabilidad | Nullable |
 |---|---|---|
-| `Data` | `DistribuidoraGustavoContext` + entidades EF. Código generado. | enable |
+| `Data` | `DistribuidoraGustavoContext`, entidades EF y migraciones. | enable |
 | `Interfaces` | Modelos (DTOs), tipos de resultado (`Results/`), interfaces `I*Service`, `CastEfToModel` (mappers), `LoginRequest/Response`, `ApplicationSettings`, utilidades (`Extensions`, `Log`). | **disable** |
 | `Core` | Implementación de los servicios, enum `eTransactionType`, template HTML de la factura. | enable |
 | `API` | Host, DI, JWT, CORS, controllers. | enable |
 | `App` | Frontend. | **disable** |
-| `SQL` | Esquema de base de datos (SSDT). No lo referencia ningún proyecto. | — |
 
 Punto a tener presente: **`Interfaces` referencia a `Data`** (porque `CastEfToModel` y `IPriceListService.CalculatePrices` usan entidades EF). Como `App` referencia a `Interfaces`, el frontend arrastra transitivamente las entidades y EF Core al bundle WASM. Ver [deuda-tecnica.md](deuda-tecnica.md#arquitectura).
 

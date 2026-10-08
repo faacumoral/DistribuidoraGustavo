@@ -41,10 +41,12 @@ public partial class DistribuidoraGustavoContext : DbContext
 
         modelBuilder.Entity<Client>(entity =>
         {
-            entity.HasKey(e => e.ClientId).HasName("PK__Clients__05623063FF67CADC");
+            entity.HasKey(e => e.ClientId);
 
-            entity.Property(e => e.ClientId).HasColumnName("CLientId");
-            entity.Property(e => e.ActualBalance).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.ClientId).HasColumnName("ClientID");
+            entity.Property(e => e.ActualBalance)
+                .HasDefaultValue(0m)
+                .HasColumnType("decimal(10, 2)");
             entity.Property(e => e.DefaultPriceListId).HasColumnName("DefaultPriceListID");
             entity.Property(e => e.InvoicePrefix)
                 .HasMaxLength(255)
@@ -58,7 +60,7 @@ public partial class DistribuidoraGustavoContext : DbContext
 
         modelBuilder.Entity<ImportedFile>(entity =>
         {
-            entity.HasKey(e => e.ImportedFileId).HasName("PK__tmp_ms_x__0000074915542E58");
+            entity.HasKey(e => e.ImportedFileId);
 
             entity.Property(e => e.ImportedFileId).HasColumnName("ImportedFileID");
             entity.Property(e => e.DateTime).HasColumnType("datetime");
@@ -66,13 +68,16 @@ public partial class DistribuidoraGustavoContext : DbContext
 
         modelBuilder.Entity<Invoice>(entity =>
         {
-            entity.HasKey(e => e.InvoiceId).HasName("PK__Invoices__D796AAB5A88DBB4F");
+            entity.HasKey(e => e.InvoiceId);
 
-            entity.HasIndex(e => e.InvoiceNumber, "UQ__Invoices__D776E9814058E364").IsUnique();
+            entity.HasIndex(e => e.InvoiceNumber, "UQ_Invoices_InvoiceNumber").IsUnique();
 
+            entity.Property(e => e.InvoiceId).HasColumnName("InvoiceID");
             entity.Property(e => e.ClientId).HasColumnName("ClientID");
+            entity.Property(e => e.PriceListId).HasColumnName("PriceListID");
+            entity.Property(e => e.Active).HasDefaultValue(false);
             entity.Property(e => e.CreatedDate)
-                .HasDefaultValueSql("(getutcdate())")
+                .HasDefaultValueSql("getutcdate()")
                 .HasColumnType("datetime");
             entity.Property(e => e.InvoiceNumber)
                 .HasMaxLength(255)
@@ -90,7 +95,7 @@ public partial class DistribuidoraGustavoContext : DbContext
 
         modelBuilder.Entity<InvoicesProduct>(entity =>
         {
-            entity.HasKey(e => e.InvoicesProductsId).HasName("PK__Invoices__9C47038442EB4875");
+            entity.HasKey(e => e.InvoicesProductsId);
 
             entity.ToTable("Invoices_Products");
 
@@ -113,7 +118,7 @@ public partial class DistribuidoraGustavoContext : DbContext
 
         modelBuilder.Entity<PriceList>(entity =>
         {
-            entity.HasKey(e => e.PriceListId).HasName("PK__PriceLis__1E30F3AC15AD6B80");
+            entity.HasKey(e => e.PriceListId);
 
             entity.Property(e => e.Name)
                 .HasMaxLength(10)
@@ -123,12 +128,16 @@ public partial class DistribuidoraGustavoContext : DbContext
 
         modelBuilder.Entity<Product>(entity =>
         {
-            entity.HasKey(e => e.ProductId).HasName("PK__Products__B40CC6CD6051C251");
+            entity.HasKey(e => e.ProductId);
 
+            entity.Property(e => e.ProductId).HasColumnName("ProductID");
             entity.Property(e => e.Active)
                 .IsRequired()
-                .HasDefaultValueSql("((1))");
-            entity.Property(e => e.BasePrice).HasColumnType("decimal(10, 2)");
+                .HasDefaultValue(true);
+            entity.Property(e => e.BasePrice)
+                .HasDefaultValue(0m)
+                .HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.QuantityPerBox).HasDefaultValue(0);
             entity.Property(e => e.Code).IsUnicode(false);
             entity.Property(e => e.Description).IsUnicode(false);
             entity.Property(e => e.Name).IsUnicode(false);
@@ -136,7 +145,7 @@ public partial class DistribuidoraGustavoContext : DbContext
 
         modelBuilder.Entity<ProductsPriceList>(entity =>
         {
-            entity.HasKey(e => e.ProductPriceListId).HasName("PK__tmp_ms_x__7892B325BCFBA799");
+            entity.HasKey(e => e.ProductPriceListId);
 
             entity.ToTable("Products_PriceLists");
 
@@ -158,13 +167,13 @@ public partial class DistribuidoraGustavoContext : DbContext
 
         modelBuilder.Entity<Transaction>(entity =>
         {
-            entity.HasKey(e => e.TransactionId).HasName("PK__Transact__55433A4BDE3513B8");
+            entity.HasKey(e => e.TransactionId);
 
             entity.Property(e => e.TransactionId).HasColumnName("TransactionID");
             entity.Property(e => e.Amount).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.ClientId).HasColumnName("ClientID");
             entity.Property(e => e.Date)
-                .HasDefaultValueSql("(getutcdate())")
+                .HasDefaultValueSql("getutcdate()")
                 .HasColumnType("datetime");
             entity.Property(e => e.Description).HasMaxLength(255);
             entity.Property(e => e.Type).HasMaxLength(255);
@@ -177,11 +186,12 @@ public partial class DistribuidoraGustavoContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__tmp_ms_x__1788CC4CF22E9043");
+            entity.HasKey(e => e.UserId);
 
+            entity.Property(e => e.UserId).HasColumnName("UserID");
             entity.Property(e => e.Active)
                 .IsRequired()
-                .HasDefaultValueSql("((1))");
+                .HasDefaultValue(true);
             entity.Property(e => e.Name).IsUnicode(false);
             entity.Property(e => e.Password).IsUnicode(false);
             entity.Property(e => e.Username).IsUnicode(false);
@@ -189,7 +199,7 @@ public partial class DistribuidoraGustavoContext : DbContext
 
         modelBuilder.Entity<UserToken>(entity =>
         {
-            entity.HasKey(e => e.UserTokenId).HasName("PK__UserToke__BD92DEBB0950282C");
+            entity.HasKey(e => e.UserTokenId);
 
             entity.Property(e => e.UserTokenId).HasColumnName("UserTokenID");
             entity.Property(e => e.ExpireTime).HasColumnType("datetime");
