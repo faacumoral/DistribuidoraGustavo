@@ -2,13 +2,13 @@
 
 [← README](../README.md)
 
-Proyecto: [DistribuidoraGustavo.App](../DistribuidoraGustavo.App/). Blazor WASM *standalone* (no hosteado por la API), .NET 6, con soporte PWA.
+Proyecto: [DistribuidoraGustavo.App](../DistribuidoraGustavo.App/). Blazor WASM *standalone* (no hosteado por la API), .NET 10, con soporte PWA.
 
 ## Estructura
 
 ```
 DistribuidoraGustavo.App/
-├── Program.cs            DI: ApiClient (HttpClient tipado), FileReader, SessionStorage
+├── Program.cs            DI: ApiClient (HttpClient tipado), SessionStorage
 ├── App.razor             Router; layout por defecto MainLayout
 ├── _Imports.razor        usings globales
 ├── Http/
@@ -28,7 +28,7 @@ DistribuidoraGustavo.App/
     └── service-worker*.js  PWA (offline solo en publish)
 ```
 
-Paquetes: `Blazored.SessionStorage` 2.3.0, `Tewr.Blazor.FileReader` 3.3.1, `Microsoft.Extensions.Http` 6.0.0.
+Paquetes: `Microsoft.AspNetCore.Components.WebAssembly` 10.0.12, `Microsoft.Extensions.Http` 10.0.12, `Blazored.SessionStorage` 2.3.0.
 
 ## Configuración
 
@@ -127,7 +127,7 @@ Convenciones observadas:
 | [NumberInput](../DistribuidoraGustavo.App/Shared/NumberInput.razor) | `Value` (int), `Disabled`, `HasChanged` (`Action<int>`) | Callback sincrónico, no `EventCallback`. Valor inválido → 0. |
 | [DecimalInput](../DistribuidoraGustavo.App/Shared/DecimalInput.razor) | `Value` (decimal), `Disabled`, `HasChanged` (`Action<decimal>`) | Ídem. Parsea con la cultura del navegador/proceso. |
 | [SearchInput](../DistribuidoraGustavo.App/Shared/SearchInput.razor) | `SearchValue`, `Disabled`, `OnValueChanged`, `OnSearch`; método `Focus()` | *Debounce* de 2 s; Enter busca de inmediato. El `id` del input es fijo (`txtSearchInput`), así que solo puede haber uno por página. |
-| [HiddenFileInput](../DistribuidoraGustavo.App/Shared/HiddenFileInput.razor) | `OnChange` (`EventCallback<MultipartFormDataContent>`); método `Open()` | Input de archivo oculto; `Open()` lo dispara por JS. Arma el multipart con el campo `file`. |
+| [HiddenFileInput](../DistribuidoraGustavo.App/Shared/HiddenFileInput.razor) | `OnChange` (`EventCallback<MultipartFormDataContent>`); método `Open()` | `InputFile` de Blazor oculto; `Open()` lo dispara por JS. Arma el multipart con el campo `file`. Tamaño máximo: 20 MB. |
 | [MainLayout](../DistribuidoraGustavo.App/Shared/MainLayout.razor) | — | Sidebar + barra superior con el nombre del usuario logueado. |
 | [LoginLayout](../DistribuidoraGustavo.App/Shared/LoginLayout.razor) | — | Layout sin menú. |
 

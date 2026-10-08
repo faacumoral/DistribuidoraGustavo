@@ -10,10 +10,10 @@ Es una SPA **Blazor WebAssembly** (PWA) que consume una **API REST ASP.NET Core*
 
 | Capa | Tecnología |
 |---|---|
-| Frontend | Blazor WebAssembly (.NET 6), PWA con service worker, Bootstrap 5 + Bootstrap Icons (CDN) |
-| Backend | ASP.NET Core Web API (.NET 6), controllers MVC, Swagger (Swashbuckle) |
+| Frontend | Blazor WebAssembly (.NET 10), PWA con service worker, Bootstrap 5 + Bootstrap Icons (CDN) |
+| Backend | ASP.NET Core Web API (.NET 10), controllers MVC, Swagger (Swashbuckle) |
 | Autenticación | JWT Bearer (clave simétrica, 180 min), emitido con `JwtSecurityTokenHandler` (`System.IdentityModel.Tokens.Jwt`) |
-| Acceso a datos | Entity Framework Core 7.0.5, *database-first* (modelos scaffoldeados) |
+| Acceso a datos | Entity Framework Core 10, *database-first* (modelos scaffoldeados) |
 | Base de datos | SQL Server / Azure SQL, esquema versionado en un proyecto SSDT (`.sqlproj`) |
 | PDF | iText 7 + pdfHTML (HTML → PDF) |
 | Excel | ExcelDataReader (importación de lista de precios) |
@@ -37,7 +37,7 @@ DistribuidoraGustavo.sln
 
 ## Cómo levantarlo en local
 
-Requisitos: SDK de .NET 6 (o superior con el targeting pack de 6), SQL Server Express con instancia `.\sqlexpress01`, y Visual Studio con SSDT para publicar el proyecto SQL.
+Requisitos: SDK de .NET 10, SQL Server Express con instancia `.\sqlexpress01`, y Visual Studio con SSDT para publicar el proyecto SQL.
 
 1. **Base de datos**: publicar `DistribuidoraGustavo.SQL` con el perfil [Local.DistribuidoraGustavo.SQL.publish.xml](DistribuidoraGustavo.SQL/Local.DistribuidoraGustavo.SQL.publish.xml) (crea la base `DistribuidoraGustavo`).
 2. **Datos iniciales** (no hay seed en el repo): hay que insertar a mano al menos una fila en `PriceLists` y un usuario en `Users`. La contraseña se guarda encriptada con `PasswordEncryptor.Encrypt(password, EncryptKey)` ([PasswordEncryptor.cs](DistribuidoraGustavo.Core/Security/PasswordEncryptor.cs)); ver [docs/backend.md](docs/backend.md#autenticación).

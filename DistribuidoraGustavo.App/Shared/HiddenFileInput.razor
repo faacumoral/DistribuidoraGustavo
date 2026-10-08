@@ -1,36 +1,32 @@
-﻿@using System.Net.Http.Headers;
-@using Tewr.Blazor.FileReader;
+@using System.Net.Http.Headers;
 
-<input type="file" @ref="_input" @onchange="HandleSelected" accept="xls,xlsx" 
+<InputFile OnChange="HandleSelected" accept=".xls,.xlsx"
     id="txtInputFile" style="display: none;" />
 
 
 @code {
-    private ElementReference _input;
-
+    private const long MAX_FILE_SIZE = 20 * 1024 * 1024;
 
     [Parameter]
     public EventCallback<MultipartFormDataContent> OnChange { get; set; }
     [Inject]
-    public IFileReaderService FileReaderService { get; set; }
-    [Inject]
     public IJSRuntime jsRuntime { get; set; }
 
-    private async Task HandleSelected()
+    private async Task HandleSelected(InputFileChangeEventArgs e)
     {
-        foreach (var file in await FileReaderService.CreateReference(_input).EnumerateFilesAsync())
-        {
-            if (file != null)
-            {
-                var fileInfo = await file.ReadFileInfoAsync();
-                var ms = await file.CreateMemoryStreamAsync(4 * 1024);
+        var file = e.File;
 
-                var content = new MultipartFormDataContent();
-                content.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
-                content.Add(new StreamContent(ms, Convert.ToInt32(ms.Length)), "file", fileInfo.Name);
-                await OnChange.InvokeAsync(content);
-            }
+        var ms = new MemoryStream();
+        await using (var fileStream = file.OpenReadStream(MAX_FILE_SIZE))
+        {
+            await fileStream.CopyToAsync(ms);
         }
+        ms.Position = 0;
+
+        var content = new MultipartFormDataContent();
+        content.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
+        content.Add(new StreamContent(ms, Convert.ToInt32(ms.Length)), "file", file.Name);
+        await OnChange.InvokeAsync(content);
     }
 
     public async Task Open()

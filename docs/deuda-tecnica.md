@@ -31,8 +31,7 @@ Hallazgos del análisis estático. No son tareas a ejecutar: son cosas a saber a
 3. **Parseo dependiente de la cultura del servidor** (`decimal.TryParse` sin `CultureInfo`): el separador decimal puede interpretarse distinto en local y en producción.
 4. **Los errores por fila no se muestran al usuario**; la página solo los escribe en la consola del navegador.
 5. La limpieza de archivos viejos en `SaveImportedFile` marca el borrado después de su propio `SaveChanges` ([:57-61](../DistribuidoraGustavo.Core/Services/PriceListService.cs#L57)); solo se persiste porque `ProcessFile` guarda más adelante.
-6. `accept="xls,xlsx"` en [HiddenFileInput.razor:4](../DistribuidoraGustavo.App/Shared/HiddenFileInput.razor#L4) no es un valor válido (debería ser `.xls,.xlsx`), así que el diálogo no filtra por tipo.
-7. A verificar en ejecución: ExcelDataReader sobre .NET Core suele requerir registrar `System.Text.Encoding.CodePages` para leer `.xls` antiguos; el código no lo hace.
+6. A verificar en ejecución: ExcelDataReader sobre .NET Core suele requerir registrar `System.Text.Encoding.CodePages` para leer `.xls` antiguos; el código no lo hace.
 
 ## Seguridad
 
@@ -57,12 +56,11 @@ Hallazgos del análisis estático. No son tareas a ejecutar: son cosas a saber a
 ## Arquitectura
 
 1. **`Interfaces` depende de `Data`**, y `App` de `Interfaces`: el frontend incluye las entidades y EF Core en su bundle. Incluso hay `using DistribuidoraGustavo.Data.EfModels` y `using Microsoft.Data.SqlClient` sin uso en páginas como [Balances.razor.cs:3-8](../DistribuidoraGustavo.App/Pages/Balances.razor.cs#L3). Separarlo implicaría mover `CastEfToModel` a `Core` y sacar `Product`/`PriceList` de la firma de `IPriceListService.CalculatePrices`.
-2. **`JWT_SecretKey` debe tener al menos 32 caracteres.** `System.IdentityModel.Tokens.Jwt` 6.36.0 rechaza claves más cortas para HS256 (error `IDX10720` al generar el token, es decir, en el login). Vale para todos los entornos.
+2. **`JWT_SecretKey` debe tener al menos 32 caracteres.** `System.IdentityModel.Tokens.Jwt` (desde 6.30) rechaza claves más cortas para HS256 (error `IDX10720` al generar el token, es decir, en el login). Vale para todos los entornos.
 3. **`try/catch` repetido** en cada acción; candidato a un filtro o middleware.
-4. Paquetes sin uso en `Core`: `EPPlus` y `NPOI` (solo aparecen en `using`). Ojo con las licencias si se empiezan a usar: EPPlus ≥ 5 no es libre para uso comercial, e iText 7 (en uso) es AGPL o licencia comercial.
-5. **.NET 6 está fuera de soporte** (finalizó en noviembre de 2024); EF Core 7 también.
-6. `eTransactionType` vive en `Core`, por lo que el frontend compara contra strings si necesita distinguir tipos.
-7. Sin tests, sin CI, sin seed de datos.
+4. Licencias: iText 7 (usado para el PDF) es AGPL o licencia comercial.
+5. `eTransactionType` vive en `Core`, por lo que el frontend compara contra strings si necesita distinguir tipos.
+6. Sin tests, sin CI, sin seed de datos.
 
 ## Funcionalidad incompleta
 

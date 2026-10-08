@@ -5,7 +5,6 @@ using DistribuidoraGustavo.Interfaces.Services;
 using DistribuidoraGustavo.Interfaces.Results;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using NPOI.SS.Formula.Functions;
 using System.ComponentModel;
 
 namespace DistribuidoraGustavo.Core.Services

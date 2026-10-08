@@ -126,6 +126,6 @@ Hasta octubre de 2026 estas piezas venían de las DLL `FMCW.*`; ahora viven en e
 
 | Proyecto | Paquetes |
 |---|---|
-| API | `Microsoft.AspNetCore.Authentication.JwtBearer` 6.0.16, `Swashbuckle.AspNetCore` 6.2.3 |
-| Core | `System.IdentityModel.Tokens.Jwt` 6.36.0, `itext7` 8.0.0, `itext7.bouncy-castle-adapter` 8.0.0, `itext7.pdfhtml` 5.0.0, `ExcelDataReader` + `.DataSet` 3.6.0, `EPPlus` 6.2.6 y `NPOI` 2.6.0 (estos dos últimos referenciados pero sin uso real) |
-| Data | `Microsoft.EntityFrameworkCore` / `.SqlServer` / `.Tools` 7.0.5 |
+| API | `Microsoft.AspNetCore.Authentication.JwtBearer` 10.0.12, `Swashbuckle.AspNetCore` 10.3.0 |
+| Core | `System.IdentityModel.Tokens.Jwt` 8.23.0, `itext7` 8.0.0, `itext7.bouncy-castle-adapter` 8.0.0, `itext7.pdfhtml` 5.0.0, `ExcelDataReader` + `.DataSet` 3.6.0 |
+| Data | `Microsoft.EntityFrameworkCore` / `.SqlServer` / `.Tools` 10.0.12 |

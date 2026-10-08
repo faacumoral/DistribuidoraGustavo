@@ -1,6 +1,6 @@
 # Distribuidora Gustavo
 
-App de gestión (productos, listas de precios, clientes, facturas, cuenta corriente). Blazor WASM (`DistribuidoraGustavo.App`) + ASP.NET Core Web API (`API` → `Core` → `Data`), .NET 6, EF Core 7 database-first, SQL Server.
+App de gestión (productos, listas de precios, clientes, facturas, cuenta corriente). Blazor WASM (`DistribuidoraGustavo.App`) + ASP.NET Core Web API (`API` → `Core` → `Data`), .NET 10, EF Core 10 database-first, SQL Server.
 
 Antes de modificar código, leer [README.md](README.md) y el documento de `docs/` que corresponda:
 

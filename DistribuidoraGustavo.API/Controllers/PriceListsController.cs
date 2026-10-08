@@ -31,7 +31,7 @@ namespace DistribuidoraGustavo.API.Controllers
         }
 
         [HttpPost("uploadFile")]
-        public async Task<ListResult<string>> UploadFile([FromForm]IFormFile file)
+        public async Task<ListResult<string>> UploadFile(IFormFile file)
         {
             try
             {
