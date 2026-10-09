@@ -11,10 +11,11 @@
 3. Extensiones de [Configure.cs](../DistribuidoraGustavo.API/Configure.cs):
    - `InitConfig()`: carga `EncryptKey` en el singleton estático `ApplicationSettings.Config` (solo puede inicializarse una vez).
    - `AddJwtManager()`: crea un [JwtManager](../DistribuidoraGustavo.Core/Services/JwtManager.cs) como singleton `IJwtManager` y configura `JwtBearer` validando issuer, audience, lifetime y firma.
-   - `AddCors()`: política `"Origins"` que permite cualquier origen, método y header.
 4. `AddDbContext<DistribuidoraGustavoContext>` con SQL Server y la connection string `DistribuidoraGustavo`.
 
-Pipeline: `UseSwagger` → `UseSwaggerUI` → `UseAuthentication` → `UseHttpsRedirection` → `UseAuthorization` → `UseCors("Origins")` → `MapControllers`. Swagger está activo en todos los entornos. (El orden de CORS está comentado en [deuda-tecnica.md](deuda-tecnica.md#seguridad).)
+Pipeline: `UseWebAssemblyDebugging` (solo en Development) → `UseSwagger` → `UseSwaggerUI` → `UseHttpsRedirection` → `UseBlazorFrameworkFiles` → `UseStaticFiles` → `UseAuthentication` → `UseAuthorization` → `MapControllers` → `api/{**path}` devuelve 404 → `MapFallbackToFile("index.html")`. Swagger está activo en todos los entornos.
+
+El frontend se sirve desde este mismo host (paquete `Microsoft.AspNetCore.Components.WebAssembly.Server` + referencia al proyecto `App`). Cualquier ruta que no sea `/api/...`, `/swagger` ni un archivo estático devuelve `index.html`; una ruta `/api/...` inexistente devuelve 404 y no la app.
 
 ## Configuración
 
@@ -26,7 +27,7 @@ Pipeline: `UseSwagger` → `UseSwaggerUI` → `UseAuthentication` → `UseHttpsR
 
 [appsettings.json](../DistribuidoraGustavo.API/appsettings.json) no tiene ninguna de estas claves: en producción deben venir de variables de entorno / App Settings del hosting (inferido; no hay nada en el repo que lo defina). El perfil de publicación de producción del proyecto SQL y la carpeta `PublishProfiles/` están en `.gitignore`.
 
-Puertos locales: `https://localhost:7109` y `http://localhost:5109` ([launchSettings.json](../DistribuidoraGustavo.API/Properties/launchSettings.json)).
+Puertos locales: `https://localhost:7109` y `http://localhost:5109` ([launchSettings.json](../DistribuidoraGustavo.API/Properties/launchSettings.json)). En esos puertos responden la app, la API y Swagger.
 
 ## Autenticación
 
@@ -37,37 +38,37 @@ Puertos locales: `https://localhost:7109` y `http://localhost:5109` ([launchSett
 
 ## Endpoints
 
-Todas las rutas son relativas a la raíz (sin `/api`). Salvo indicación, requieren `Authorization: Bearer {jwt}` y responden HTTP 200 con un *result object*.
+Todas las rutas llevan el prefijo `/api` (la tabla lo incluye). Salvo indicación, requieren `Authorization: Bearer {jwt}` y responden HTTP 200 con un *result object*.
 
 ### Users — [UsersController](../DistribuidoraGustavo.API/Controllers/UsersController.cs)
 
 | Método | Ruta | Body | Respuesta | Notas |
 |---|---|---|---|---|
-| POST | `/Users/login` | `LoginRequest { Username, Password }` | `DTOResult<LoginResponse>` | Anónimo. Sin `try/catch`. |
+| POST | `/api/Users/login` | `LoginRequest { Username, Password }` | `DTOResult<LoginResponse>` | Anónimo. Sin `try/catch`. |
 
 ### Clients — [ClientsController](../DistribuidoraGustavo.API/Controllers/ClientsController.cs)
 
 | Método | Ruta | Body / Query | Respuesta | Notas |
 |---|---|---|---|---|
-| GET | `/Clients` | — | `ListResult<ClientModel>` | Incluye `DefaultPriceList`. Sin paginado ni orden. |
-| GET | `/Clients/{clientId}` | — | `DTOResult<ClientModel>` | |
-| POST | `/Clients` | `ClientModel` | `DTOResult<ClientModel>` | Upsert. Valida `Name` y `DefaultPriceList`. En alta valida prefijo único; en modificación solo cambia `Name` y lista por defecto (el prefijo es inmutable). |
+| GET | `/api/Clients` | — | `ListResult<ClientModel>` | Incluye `DefaultPriceList`. Sin paginado ni orden. |
+| GET | `/api/Clients/{clientId}` | — | `DTOResult<ClientModel>` | |
+| POST | `/api/Clients` | `ClientModel` | `DTOResult<ClientModel>` | Upsert. Valida `Name` y `DefaultPriceList`. En alta valida prefijo único; en modificación solo cambia `Name` y lista por defecto (el prefijo es inmutable). |
 
 ### Products — [ProductsController](../DistribuidoraGustavo.API/Controllers/ProductsController.cs)
 
 | Método | Ruta | Body / Query | Respuesta | Notas |
 |---|---|---|---|---|
-| GET | `/Products` | `filter`, `priceListId` | `ListResult<ProductModel>` | Máx. 100 activos. Si `priceListId` existe, completa `UnitPrice` con el precio de esa lista. |
-| GET | `/Products/prices` | `filter`, `priceListId` | `ListResult<PricedProductModel>` | Máx. 300. `priceListId` 0 o ausente trae precios de todas las listas. |
-| GET | `/Products/{ProductId}` | — | `DTOResult<ProductModel>` | |
-| POST | `/Products` | `ProductModel` | `DTOResult<ProductModel>` | Upsert. Recalcula los precios de todas las listas. |
+| GET | `/api/Products` | `filter`, `priceListId` | `ListResult<ProductModel>` | Máx. 100 activos. Si `priceListId` existe, completa `UnitPrice` con el precio de esa lista. |
+| GET | `/api/Products/prices` | `filter`, `priceListId` | `ListResult<PricedProductModel>` | Máx. 300. `priceListId` 0 o ausente trae precios de todas las listas. |
+| GET | `/api/Products/{ProductId}` | — | `DTOResult<ProductModel>` | |
+| POST | `/api/Products` | `ProductModel` | `DTOResult<ProductModel>` | Upsert. Recalcula los precios de todas las listas. |
 
 ### PriceLists — [PriceListsController](../DistribuidoraGustavo.API/Controllers/PriceListsController.cs)
 
 | Método | Ruta | Body / Query | Respuesta | Notas |
 |---|---|---|---|---|
-| GET | `/PriceLists` | — | `ListResult<PriceListModel>` | |
-| POST | `/PriceLists/uploadFile` | `multipart/form-data`, campo `file` | `ListResult<string>` | Importa productos y precios desde Excel. La lista devuelta son los errores por fila. |
+| GET | `/api/PriceLists` | — | `ListResult<PriceListModel>` | |
+| POST | `/api/PriceLists/uploadFile` | `multipart/form-data`, campo `file` | `ListResult<string>` | Importa productos y precios desde Excel. La lista devuelta son los errores por fila. |
 
 No hay ABM de listas de precios (figura como pendiente en `todo.txt`); se administran en la base.
 
@@ -75,19 +76,19 @@ No hay ABM de listas de precios (figura como pendiente en `todo.txt`); se admini
 
 | Método | Ruta | Body / Query | Respuesta | Notas |
 |---|---|---|---|---|
-| GET | `/Invoices` | `ClientID` (0 = todos) | `ListResult<InvoiceModel>` | Últimas 50 activas, por fecha descendente. |
-| GET | `/Invoices/{invoiceId}` | — | `DTOResult<InvoiceModel>` | No filtra por `Active`. |
-| POST | `/Invoices` | `InvoiceModel` | `DTOResult<InvoiceModel>` | Upsert. Actualiza saldo del cliente y su transacción. |
-| DELETE | `/Invoices/{invoiceId}` | — | `BoolResult` | Baja lógica (`Active = false`). |
-| GET | `/Invoices/{invoiceID}/downloadtoken` | — | `StringResult` | Token GUID de un solo uso, válido 1 minuto. |
-| GET | `/Invoices/download` | `token` | Archivo `application/pdf` | Anónimo. HTTP 500 si el token es inválido. |
+| GET | `/api/Invoices` | `ClientID` (0 = todos) | `ListResult<InvoiceModel>` | Últimas 50 activas, por fecha descendente. |
+| GET | `/api/Invoices/{invoiceId}` | — | `DTOResult<InvoiceModel>` | No filtra por `Active`. |
+| POST | `/api/Invoices` | `InvoiceModel` | `DTOResult<InvoiceModel>` | Upsert. Actualiza saldo del cliente y su transacción. |
+| DELETE | `/api/Invoices/{invoiceId}` | — | `BoolResult` | Baja lógica (`Active = false`). |
+| GET | `/api/Invoices/{invoiceID}/downloadtoken` | — | `StringResult` | Token GUID de un solo uso, válido 1 minuto. |
+| GET | `/api/Invoices/download` | `token` | Archivo `application/pdf` | Anónimo. HTTP 500 si el token es inválido. |
 
 ### Transactions — [TransactionsController](../DistribuidoraGustavo.API/Controllers/TransactionsController.cs)
 
 | Método | Ruta | Body / Query | Respuesta | Notas |
 |---|---|---|---|---|
-| GET | `/Transactions` | `clientId` (opcional) | `ListResult<TransactionModel>` | Últimas 200 por fecha descendente. |
-| POST | `/Transactions/payment` | `TransactionModel` (`Amount`, `Client.ClientId`) | `DTOResult<TransactionModel>` | Registra un pago y descuenta el saldo. |
+| GET | `/api/Transactions` | `clientId` (opcional) | `ListResult<TransactionModel>` | Últimas 200 por fecha descendente. |
+| POST | `/api/Transactions/payment` | `TransactionModel` (`Amount`, `Client.ClientId`) | `DTOResult<TransactionModel>` | Registra un pago y descuenta el saldo. |
 
 ## Servicios
 
@@ -126,6 +127,6 @@ Hasta octubre de 2026 estas piezas venían de las DLL `FMCW.*`; ahora viven en e
 
 | Proyecto | Paquetes |
 |---|---|
-| API | `Microsoft.AspNetCore.Authentication.JwtBearer` 10.0.12, `Swashbuckle.AspNetCore` 10.3.0 |
+| API | `Microsoft.AspNetCore.Authentication.JwtBearer` 10.0.12, `Microsoft.AspNetCore.Components.WebAssembly.Server` 10.0.12, `Microsoft.EntityFrameworkCore.Design` 10.0.12, `Swashbuckle.AspNetCore` 10.3.0 |
 | Core | `System.IdentityModel.Tokens.Jwt` 8.23.0, `itext7` 8.0.0, `itext7.bouncy-castle-adapter` 8.0.0, `itext7.pdfhtml` 5.0.0, `ExcelDataReader` + `.DataSet` 3.6.0 |
 | Data | `Microsoft.EntityFrameworkCore` / `.SqlServer` / `.Tools` 10.0.12 |

@@ -24,7 +24,6 @@ builder.Services.AddTransient<ITransactionService, TransactionService>();
 
 builder.InitConfig();
 builder.AddJwtManager();
-builder.AddCors();
 
 builder.Services.AddDbContext<DistribuidoraGustavoContext>(
     options => {
@@ -35,17 +34,28 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseWebAssemblyDebugging();
+}
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseAuthentication();
-
 app.UseHttpsRedirection();
+
+// Blazor WASM (DistribuidoraGustavo.App) is served by this same host
+app.UseBlazorFrameworkFiles();
+app.UseStaticFiles();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.UseCors("Origins");
-
 app.MapControllers();
+
+// unknown api routes must not fall back to the Blazor app
+app.Map("api/{**path}", () => Results.NotFound());
+app.MapFallbackToFile("index.html");
 
 app.Run();

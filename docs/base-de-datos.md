@@ -152,4 +152,8 @@ Diferencias que quedan entre una base adoptada y una creada desde cero, a tener 
 - **Nombres de claves primarias.** El modelo asume `PK_Clients`, `PK_Invoices`, etc.; en una base adoptada tienen nombres autogenerados (`PK__Clients__...`).
 - **Unicidad de `Invoices.InvoiceNumber`.** El modelo asume un índice único llamado `UQ_Invoices_InvoiceNumber`; en una base adoptada es una restricción `UNIQUE` con nombre autogenerado.
 
-Mientras ninguna migración modifique una clave primaria o esa unicidad, la diferencia no tiene efecto. La migración inicial se validó contra las definiciones del proyecto SSDT (columnas, tipos, nulabilidad, defaults y claves foráneas), no contra la base de producción real: conviene comparar antes del primer despliegue.
+- **Texto de los defaults.** Son equivalentes pero no idénticos: por ejemplo `((0.0))` y `(CONVERT([bit],(1)))` en una base nueva contra `((0))` y `((1))` en una adoptada.
+
+Mientras ninguna migración modifique una clave primaria, esa unicidad o esos defaults, la diferencia no tiene efecto.
+
+Esto se verificó en SQL Server 2022: una base creada con los scripts del proyecto SSDT y adoptada con el script queda igual a una creada por la migración en columnas, tipos, nulabilidad, claves foráneas e índices, y `dotnet ef database update` no intenta aplicarle nada. No se verificó contra la base de producción real, que puede tener diferencias propias: conviene compararla antes del primer despliegue.

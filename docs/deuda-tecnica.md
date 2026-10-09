@@ -2,7 +2,7 @@
 
 [← README](../README.md)
 
-Hallazgos del análisis estático. No son tareas a ejecutar: son cosas a saber antes de modificar el código. Están ordenados por área y, dentro de cada una, por impacto.
+Hallazgos del análisis estático y de las pruebas contra SQL Server. No son tareas a ejecutar: son cosas a saber antes de modificar el código. Están ordenados por área y, dentro de cada una, por impacto.
 
 ## Consistencia de datos (facturas y saldos)
 
@@ -31,17 +31,17 @@ Hallazgos del análisis estático. No son tareas a ejecutar: son cosas a saber a
 3. **Parseo dependiente de la cultura del servidor** (`decimal.TryParse` sin `CultureInfo`): el separador decimal puede interpretarse distinto en local y en producción.
 4. **Los errores por fila no se muestran al usuario**; la página solo los escribe en la consola del navegador.
 5. La limpieza de archivos viejos en `SaveImportedFile` marca el borrado después de su propio `SaveChanges` ([:57-61](../DistribuidoraGustavo.Core/Services/PriceListService.cs#L57)); solo se persiste porque `ProcessFile` guarda más adelante.
-6. A verificar en ejecución: ExcelDataReader sobre .NET Core suele requerir registrar `System.Text.Encoding.CodePages` para leer `.xls` antiguos; el código no lo hace.
+6. **Un archivo inválido pisa el respaldo del día.** `SaveImportedFile` guarda la copia antes de leer el Excel: si se sube algo que no es una planilla, la importación falla pero el respaldo válido de ese día en `ImportedFiles` queda reemplazado por el archivo inválido.
+7. Los `.xls` de Excel 97-2003 se importan bien sin registrar `System.Text.Encoding.CodePages` (probado). No se probaron formatos más viejos (Excel 95), que son los que suelen necesitarlo.
 
 ## Seguridad
 
 1. **Secretos versionados.** [appsettings.Development.json](../DistribuidoraGustavo.API/appsettings.Development.json) contiene `JWT_SecretKey` y `EncryptKey`. Si producción usa los mismos valores, deben rotarse.
 2. **Contraseñas con encriptación reversible**, no hash ([PasswordEncryptor.cs](../DistribuidoraGustavo.Core/Security/PasswordEncryptor.cs)). Quien tenga la `EncryptKey` y acceso a la base puede recuperarlas.
-3. **CORS abierto** a cualquier origen ([Configure.cs:59](../DistribuidoraGustavo.API/Configure.cs#L59)), y `UseCors` está después de `UseAuthorization` ([Program.cs:45-47](../DistribuidoraGustavo.API/Program.cs#L45)); el orden recomendado es antes de autenticación y autorización.
-4. **Swagger expuesto en todos los entornos** ([Program.cs:38](../DistribuidoraGustavo.API/Program.cs#L38)).
-5. **Las excepciones se devuelven al cliente** (`Result.Error(ex)` incluye el detalle en `FullException`).
-6. **Descarga con `eval`** construyendo JavaScript por interpolación ([Invoices.razor.cs:89](../DistribuidoraGustavo.App/Pages/Invoices.razor.cs#L89)). Hoy los valores son controlados, pero conviene una función en `site.js`.
-7. Sin autorización por roles: cualquier usuario activo puede hacer todo.
+3. **Swagger expuesto en todos los entornos** ([Program.cs](../DistribuidoraGustavo.API/Program.cs)).
+4. **Las excepciones se devuelven al cliente** (`Result.Error(ex)` incluye el detalle en `FullException`).
+5. **Descarga con `eval`** construyendo JavaScript por interpolación ([Invoices.razor.cs:89](../DistribuidoraGustavo.App/Pages/Invoices.razor.cs#L89)). Hoy los valores son controlados, pero conviene una función en `site.js`.
+6. Sin autorización por roles: cualquier usuario activo puede hacer todo.
 
 ## Sesión y manejo de errores
 
@@ -73,7 +73,9 @@ De [todo.txt](../todo.txt) y de lo observado:
 - Edición de precio al hacer clic en el input.
 - `QuantityPerBox` no editable desde la pantalla de producto.
 - `Invoice.Description` existe en modelo y base pero ninguna pantalla lo carga (en cada edición se pisa con `null`).
+- `GET /api/Products/prices` devuelve `basePrice` en 0 para todos los productos: `GetWithPrices` no copia ese campo al armar el modelo.
+- Las respuestas de los POST devuelven el modelo incompleto: en facturas los ítems vuelven sin `productId`, código ni nombre y sin lista de precios; en clientes, sin `defaultPriceList`. Un GET posterior trae todo. Importa si alguna pantalla usa la respuesta del POST directamente.
+- En el PDF los importes por ítem salen con la cultura del servidor (por ejemplo `$201.00`) y los totales en `es-AR` sin decimales (`$ 4.005`), así que quedan dos formatos mezclados.
 - La pantalla de precios asume que cada producto tiene precio en todas las listas; si falta alguno, las columnas se desalinean.
 - Listados con tope fijo y sin paginado: 50 facturas, 200 movimientos, 100/300 productos (estos últimos sin `OrderBy`, por lo que el recorte no es determinístico).
-- El cambio de `ApiUrl` entre local y producción es manual; es fácil publicar apuntando a `localhost`.
 - [AddOrEditProduct.razor](../DistribuidoraGustavo.App/Pages/AddOrEditProduct.razor) tiene `class="rowform-row"` (falta un espacio) y varias páginas usan la etiqueta `<diva>` en lugar de `<div>`.

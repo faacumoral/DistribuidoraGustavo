@@ -88,7 +88,7 @@ Cualquier operación que cambie el total de una factura debe mantener sincroniza
 ## Agregar configuración
 
 - **API**: clave en `appsettings.Development.json` (y en el hosting de producción). Leerla con `builder.Configuration["Clave"]`; si la necesita `Core`, exponerla vía [ApplicationSettings](../DistribuidoraGustavo.Interfaces/Settings/ApplicationSettings.cs) e inicializarla en `Configure.InitConfig`.
-- **App**: clave en `wwwroot/appsettings.json`; leerla con `IConfiguration` inyectado. Todo lo que esté ahí es público.
+- **App**: hoy no tiene configuración. Si hiciera falta, crear `wwwroot/appsettings.json` y leerlo con `IConfiguration` inyectado. Todo lo que esté ahí es público.
 
 ## Verificación
 
@@ -98,4 +98,4 @@ No hay tests automatizados. Para validar un cambio:
 dotnet build DistribuidoraGustavo.sln
 ```
 
-Después, probar a mano el flujo afectado con API y App levantadas, o los endpoints desde Swagger en `https://localhost:7109/swagger`.
+Después, probar a mano el flujo afectado con la aplicación levantada (`dotnet run --project DistribuidoraGustavo.API`), o los endpoints desde Swagger en `https://localhost:7109/swagger`.

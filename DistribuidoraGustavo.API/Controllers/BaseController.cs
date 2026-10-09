@@ -6,7 +6,7 @@ namespace DistribuidoraGustavo.API.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class BaseController : ControllerBase
     {
         protected int UserId { get => int.Parse(User.Claims.First(c => c.Type == JwtManager.USER_ID_CLAIM).Value); }

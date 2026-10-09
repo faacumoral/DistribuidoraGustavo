@@ -48,20 +48,5 @@ namespace DistribuidoraGustavo.API
                   };
               });
         }
-
-        public static void AddCors(this WebApplicationBuilder builder)
-        {
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy(name: "Origins",
-                                  builder =>
-                                  {
-                                      builder
-                                        .AllowAnyOrigin()
-                                        .AllowAnyMethod()
-                                        .AllowAnyHeader();
-                                  });
-            });
-        }
     }
 }

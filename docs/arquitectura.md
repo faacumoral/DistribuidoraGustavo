@@ -9,23 +9,27 @@ flowchart LR
     subgraph Browser
         App["DistribuidoraGustavo.App<br/>(Blazor WASM)"]
     end
-    subgraph Servidor
-        API["DistribuidoraGustavo.API<br/>(controllers)"]
+    subgraph Servidor["Servidor (un solo proceso)"]
+        API["DistribuidoraGustavo.API<br/>(controllers + archivos del frontend)"]
         Core["DistribuidoraGustavo.Core<br/>(servicios)"]
         Data["DistribuidoraGustavo.Data<br/>(EF Core)"]
     end
     DB[(SQL Server)]
-    App -- "HTTP + JSON, JWT Bearer" --> API
+    API -- "descarga del WASM" --> App
+    App -- "/api/... JSON, JWT Bearer" --> API
     API --> Core --> Data --> DB
 ```
 
 Arquitectura en capas clásica, sin CQRS, MediatR ni repositorios: los servicios usan el `DbContext` directamente.
+
+El proyecto `API` es el único host: expone la API bajo `/api/...`, sirve los archivos estáticos del frontend y responde `index.html` para cualquier otra ruta (así funcionan el refresco y los links directos a páginas de Blazor). Frontend y API comparten origen, por lo que no hay CORS.
 
 ## Dependencias entre proyectos
 
 ```mermaid
 flowchart TD
     App --> Interfaces
+    API --> App
     API --> Core
     API --> Interfaces
     API --> Data
@@ -39,7 +43,7 @@ flowchart TD
 | `Data` | `DistribuidoraGustavoContext`, entidades EF y migraciones. | enable |
 | `Interfaces` | Modelos (DTOs), tipos de resultado (`Results/`), interfaces `I*Service`, `CastEfToModel` (mappers), `LoginRequest/Response`, `ApplicationSettings`, utilidades (`Extensions`, `Log`). | **disable** |
 | `Core` | Implementación de los servicios, enum `eTransactionType`, template HTML de la factura. | enable |
-| `API` | Host, DI, JWT, CORS, controllers. | enable |
+| `API` | Host único: DI, JWT, controllers y archivos del frontend. Referencia a `App` solo para publicarlo. | enable |
 | `App` | Frontend. | **disable** |
 
 Punto a tener presente: **`Interfaces` referencia a `Data`** (porque `CastEfToModel` y `IPriceListService.CalculatePrices` usan entidades EF). Como `App` referencia a `Interfaces`, el frontend arrastra transitivamente las entidades y EF Core al bundle WASM. Ver [deuda-tecnica.md](deuda-tecnica.md#arquitectura).
@@ -49,7 +53,7 @@ Punto a tener presente: **`Interfaces` referencia a `Data`** (porque `CastEfToMo
 Ejemplo: listar clientes.
 
 1. La página [Clients.razor.cs](../DistribuidoraGustavo.App/Pages/Clients.razor.cs) llama `ApiClient.Send<ListResult<ClientModel>>(ApiRequest.BuildGet("Clients"))`.
-2. [ApiClient](../DistribuidoraGustavo.App/Http/ApiClient.cs) lee el JWT de `sessionStorage`, lo agrega como `Authorization: Bearer` y hace el request a `{ApiUrl}Clients`.
+2. [ApiClient](../DistribuidoraGustavo.App/Http/ApiClient.cs) lee el JWT de `sessionStorage`, lo agrega como `Authorization: Bearer` y hace el request a `/api/Clients` (mismo origen).
 3. [ClientsController](../DistribuidoraGustavo.API/Controllers/ClientsController.cs) (hereda `[Authorize]` de `BaseController`) llama a `IClientService.GetAll()` dentro de un `try/catch`.
 4. [ClientService](../DistribuidoraGustavo.Core/Services/ClientService.cs) consulta el `DbContext` y convierte entidades a modelos con `CastEfToModel.ToModel`.
 5. El controller envuelve el resultado en `ListResult<ClientModel>.Ok(...)`; ante una excepción devuelve `ListResult<ClientModel>.Error(ex)` (también con HTTP 200).
@@ -80,7 +84,7 @@ Consecuencia importante: **los errores de negocio y las excepciones viajan con H
 
 ### Controllers
 
-- Todos heredan de [BaseController](../DistribuidoraGustavo.API/Controllers/BaseController.cs): `[Authorize]`, `[ApiController]`, `[Route("[controller]")]`. La ruta es el nombre del controller sin prefijo `api/`.
+- Todos heredan de [BaseController](../DistribuidoraGustavo.API/Controllers/BaseController.cs): `[Authorize]`, `[ApiController]`, `[Route("api/[controller]")]`. El prefijo `api/` es obligatorio: sin él las rutas chocan con las páginas del frontend (`/clients`, `/invoices`, `/products`).
 - Cada acción repite el mismo esqueleto: `try { ... return Result.Ok(x); } catch (Exception ex) { Log.Error(ex); return Result.Error(ex); }`.
 - `BaseController.UserId` lee el claim `IdUsuario` del JWT.
 - Los endpoints de escritura son **upserts por POST**: el id en `0` significa alta, distinto de `0` significa modificación. No se usa PUT.

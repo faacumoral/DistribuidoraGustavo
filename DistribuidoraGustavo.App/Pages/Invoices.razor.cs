@@ -85,7 +85,7 @@ public class InvoicesBase : ComponentBase
             Console.WriteLine(tokenResult.ResultError.FullException);
         }
 
-        var urlDownload = $"{Configuration["ApiUrl"]}invoices/download?token={tokenResult.ResultOk}";
+        var urlDownload = $"{NavigationManager.BaseUri}api/invoices/download?token={tokenResult.ResultOk}";
         await JSRuntime.InvokeVoidAsync("eval", $"let _discard_ = open(`{urlDownload}`, `_blank`)");
         State.Processing = false;
     }

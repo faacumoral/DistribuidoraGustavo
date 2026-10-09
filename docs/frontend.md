@@ -2,7 +2,7 @@
 
 [← README](../README.md)
 
-Proyecto: [DistribuidoraGustavo.App](../DistribuidoraGustavo.App/). Blazor WASM *standalone* (no hosteado por la API), .NET 10, con soporte PWA.
+Proyecto: [DistribuidoraGustavo.App](../DistribuidoraGustavo.App/). Blazor WASM hosteado por el proyecto `API` (no tiene servidor propio ni se ejecuta solo), .NET 10, con soporte PWA.
 
 ## Estructura
 
@@ -21,7 +21,6 @@ DistribuidoraGustavo.App/
 │   ├── Views.cs          Enum de vistas (ruteo)
 │   └── Extensions.cs     Helpers de sessionStorage y navegación
 └── wwwroot/
-    ├── appsettings.json  ApiUrl
     ├── index.html        Carga Bootstrap local, Bootstrap Icons por CDN, site.js
     ├── site.js           FocusElement(id), ClickElement(id)
     ├── css/app.css       Estilos globales (font-size 13px)
@@ -32,7 +31,9 @@ Paquetes: `Microsoft.AspNetCore.Components.WebAssembly` 10.0.12, `Microsoft.Exte
 
 ## Configuración
 
-[wwwroot/appsettings.json](../DistribuidoraGustavo.App/wwwroot/appsettings.json) tiene una sola clave, `ApiUrl` (con barra final). El cambio entre local y producción se hace **comentando y descomentando a mano** la línea correspondiente; no hay `appsettings.{Environment}.json`.
+No tiene configuración propia. La API está en el mismo origen que la app, así que la dirección base se arma en [Program.cs](../DistribuidoraGustavo.App/Program.cs) con `HostEnvironment.BaseAddress + "api/"` y no hay nada que cambiar entre local y producción.
+
+Para ejecutarlo se levanta el proyecto `API`, que lo sirve (ver [README](../README.md#cómo-levantarlo-en-local)).
 
 ## Acceso a la API
 
@@ -47,7 +48,7 @@ else Alert.ShowError(result.ResultError.FriendlyErrorMessage);
 Comportamiento de `Send<TResult>`:
 
 1. Lee el JWT de `sessionStorage`. Si no hay y el request tiene `CheckAuth = true` (default), navega a `/Login` y devuelve un result con `ResultOperation.Unauthorized`.
-2. Arma la URL concatenando `BaseAddress + request.Url` (la URL relativa va sin barra inicial).
+2. Arma la URL concatenando `BaseAddress + request.Url`. `BaseAddress` es el origen de la app más `api/`, así que la URL relativa va sin barra inicial y sin el prefijo (`"Clients"`, no `"/api/Clients"`).
 3. Si `Parameter != null`, lo serializa como JSON en el body.
 4. Respuesta 2xx: deserializa a `TResult`. Cualquier otro status: devuelve un result de error con el body como mensaje. **Un 401 por token vencido no redirige al login.**
 
@@ -152,3 +153,4 @@ Convenciones observadas:
 
 - [service-worker.js](../DistribuidoraGustavo.App/wwwroot/service-worker.js) (desarrollo) no cachea nada.
 - [service-worker.published.js](../DistribuidoraGustavo.App/wwwroot/service-worker.published.js) (publish) cachea los assets del manifest y sirve `index.html` offline. Tener en cuenta al desplegar: los usuarios pueden seguir viendo la versión anterior hasta que el service worker se actualice.
+- El service worker publicado **no** responde con `index.html` las navegaciones a `/api/...` ni a `/swagger`: las deja pasar al servidor. Es necesario para la descarga del PDF, que se abre en una pestaña nueva.
