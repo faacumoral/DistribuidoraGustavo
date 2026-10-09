@@ -1,64 +1,76 @@
-﻿@page "/products"
+@page "/products"
 
+@using DistribuidoraGustavo.App.Utils
 @inherits ProductsBase
 
-<diva class="row">
-    <Alerts @ref="Alert"></Alerts>
-</diva>
+<div class="simple-ui">
 
-<div class="row">
-    <div class="col-1">
-        Producto
-    </div>
-    <div class="col-4">
-        <SearchInput 
-            Disabled="@State.Processing"
-            OnSearch="SearchProducts"
-            OnValueChanged="(string newValue) => State.Filter = newValue"
-            SearchValue="@State.Filter"
-            @ref="SearchInput"
-        ></SearchInput>
-    </div>
+    <Alerts @ref="Alert" Seconds="8"></Alerts>
 
-    <div class="col-4">
-        <button class="btn btn-success" @onclick=AddProduct>
-            Agregar producto &nbsp;
-            <i class="bi bi-clipboard-plus"></i>
+    <div class="page-header">
+        <h1>Productos</h1>
+        <div class="search-row">
+            <SearchInput Disabled="@State.Processing"
+                         OnSearch="SearchProducts"
+                         OnValueChanged="(string newValue) => State.Filter = newValue"
+                         SearchValue="@State.Filter"
+                         Placeholder="Turrón, mogul, 4003"
+                         @ref="SearchInput"></SearchInput>
+            <button class="btn btn-outline-dark" disabled="@State.Processing" @onclick="SearchProducts">
+                <i class="bi bi-search"></i> Buscar
+            </button>
+        </div>
+        <button class="btn btn-success" @onclick="AddProduct">
+            <i class="bi bi-plus-lg"></i> Agregar producto
         </button>
     </div>
 
-</div>
+    <Spinner Show="@State.Processing"></Spinner>
 
-<Spinner Show="@State.Processing"></Spinner>
-
-@if (!State.Processing)
-{
-    <hr />
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th scope="col">Código</th>
-                <th scope="col">Nombre</th>
-                <th scope="col">Descripción</th>
-                <th scope="col">Precio lista</th>
-                <th scope="col"></th>
-            </tr>
-      </thead>
-      <tbody>
-        @foreach (var product in Products)
+    @if (!State.Processing)
+    {
+        @if (Products.Count == 0)
         {
-            <tr>
-                <td>@product.Code</td>
-                <td>@product.Name</td>
-                <td>@product.Description</td>
-                <td>@product.BasePrice</td>
-                <td>
-                    <button class="btn btn-dark" @onclick="() => UpdateProduct(product)">
-                        Editar &nbsp;  <i class="bi bi-pencil-square"></i>
-                    </button>
-                </td>
-            </tr>
+            <p>No hay productos con ese nombre o código.</p>
         }
-      </tbody>
-    </table>
-}
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Nombre</th>
+                        <th class="num">Bulto</th>
+                        <th class="num">Precio base</th>
+                        @foreach (var priceList in PriceLists)
+                        {
+                            <th class="num">@priceList.Name</th>
+                        }
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var product in Products)
+                    {
+                        <tr class="clickable" title="Editar @product.Name" @onclick="() => UpdateProduct(product)">
+                            <td>@product.Code</td>
+                            <td class="strong">@product.Name</td>
+                            <td class="num">@(product.QuantityPerBox > 0 ? product.QuantityPerBox.ToString() : "-")</td>
+                            <td class="num strong">@product.BasePrice.ToMoney()</td>
+                            @foreach (var priceList in PriceLists)
+                            {
+                                <td class="num">@PriceIn(product, priceList)</td>
+                            }
+                            <td class="actions">
+                                <button class="btn btn-dark">
+                                    <i class="bi bi-pencil-square"></i> Editar
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    }
+
+</div>

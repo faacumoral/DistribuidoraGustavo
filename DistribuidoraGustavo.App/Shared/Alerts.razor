@@ -31,11 +31,24 @@
         timer.Elapsed += HideError;
     }
 
+    /// <summary>
+    /// Seconds a message stays visible when it hides by itself
+    /// </summary>
+    [Parameter]
+    public int Seconds { get; set; } = 3;
+
     public string Message { get; set; }
     public System.Timers.Timer timer;
 
     public void HideError(object? source, ElapsedEventArgs e)
     {
+        Message = "";
+        StateHasChanged();
+    }
+
+    public void Hide()
+    {
+        timer.Stop();
         Message = "";
         StateHasChanged();
     }
@@ -47,7 +60,10 @@
         StateHasChanged();
 
         if (hideAfterTime)
+        {
+            timer.Interval = Seconds * 1000;
             timer.Start();
+        }
     }
     public void ShowSuccess(string message, bool hideAfterTime = true)
     {

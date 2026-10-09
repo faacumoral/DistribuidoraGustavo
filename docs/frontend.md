@@ -119,15 +119,47 @@ Convenciones observadas:
 - Errores: `Alert.ShowError(result.ResultError.FriendlyErrorMessage)`; el detalle técnico va a `Console.WriteLine`.
 - Varias páginas inyectan `IJSRuntime` e `IConfiguration` aunque no los usen.
 
+## Pantallas simplificadas (`simple-ui`)
+
+El usuario principal es una persona mayor con poco contacto con la tecnología. Las pantallas se van pasando de a una a un estilo de letra y controles grandes, definido una sola vez en [app.css](../DistribuidoraGustavo.App/wwwroot/css/app.css) bajo la clase `simple-ui`. Ya migradas: `Products` y `AddOrEditProduct`; el resto sigue con el estilo anterior (letra de 13 px).
+
+Para migrar una pantalla se envuelve su contenido en `<div class="simple-ui">` y se usan estas clases:
+
+| Clase | Uso |
+|---|---|
+| `page-header` + `<h1>` | Título de la pantalla; en los listados lleva al lado el buscador y la acción principal. En edición el `<h1>` es el nombre de lo que se edita, con `page-kicker` arriba ("Editar producto") |
+| `back-link` | "Volver a ..." arriba del título |
+| `form-layout` | Formulario en dos columnas: campos a la izquierda, `summary-card` a la derecha |
+| `field-row` (`short-first`) | Dos campos por renglón; `short-first` cuando el primero es corto (código + nombre) |
+| `field`, `field-label`, `field-help`, `field-error` | Un campo: etiqueta arriba, ayuda corta, error debajo |
+| `readonly-value` | Dato que no se puede editar, mostrado como texto |
+| `input-with-prefix` | Campo con `$` adelante |
+| `summary-card`, `summary-title`, `summary-line`, `summary-value` | Recuadro fijo a la derecha con el resultado en vivo y los botones de guardar |
+| `form-actions` | Fila de botones |
+| `danger-zone`, `confirm-box` | Acción destructiva separada del resto, con confirmación en la misma pantalla |
+| `search-row` | Buscador con botón "Buscar" |
+| `data-table` (`num`, `strong`, `actions`, `clickable`) | Listado en tabla: `num` alinea a la derecha, `strong` resalta, `actions` es la columna de botones. `clickable` en el `<tr>` cuando toda la fila abre el detalle (el `@onclick` va en la fila; el botón queda como indicación visual) |
+
+El uso principal es en escritorio, así que el diseño aprovecha el ancho. Por debajo de 992 px el formulario pasa a una sola columna.
+
+Criterios que siguen estas pantallas:
+
+- Título visible y forma de volver sin guardar.
+- Textos en lenguaje llano y en voseo ("Escribí el nombre del producto").
+- Los errores de validación se muestran junto al campo y **no desaparecen solos** (`ShowError(msg, false)`); el cartel general se oculta cuando se corrigen los campos.
+- Después de guardar o dar de baja se vuelve al listado con un aviso de confirmación (parámetro `?done=` que lee `ProductsBase`).
+- Las acciones destructivas piden confirmación explicando la consecuencia.
+- Importes: se parsean con [Numbers.TryParseAmount](../DistribuidoraGustavo.App/Utils/Numbers.cs), que acepta `1500`, `1500,50`, `1.500` y `1.500,50`, y se muestran con `ToMoney()` (`$ 1.500,50`), sin depender de la cultura del navegador.
+
 ## Componentes compartidos
 
 | Componente | Parámetros / API | Notas |
 |---|---|---|
-| [Alerts](../DistribuidoraGustavo.App/Shared/Alerts.razor) | `ShowSuccess(msg, hideAfterTime = true)`, `ShowError(...)` | Se usa por `@ref`. Se oculta solo a los 3 s. |
+| [Alerts](../DistribuidoraGustavo.App/Shared/Alerts.razor) | `Seconds` (default 3); `ShowSuccess(msg, hideAfterTime = true)`, `ShowError(...)`, `Hide()` | Se usa por `@ref`. Se oculta solo a los `Seconds` segundos, salvo que se pase `hideAfterTime = false`. |
 | [Spinner](../DistribuidoraGustavo.App/Shared/Spinner.razor) | `Show` | Spinner de Bootstrap. |
 | [NumberInput](../DistribuidoraGustavo.App/Shared/NumberInput.razor) | `Value` (int), `Disabled`, `HasChanged` (`Action<int>`) | Callback sincrónico, no `EventCallback`. Valor inválido → 0. |
 | [DecimalInput](../DistribuidoraGustavo.App/Shared/DecimalInput.razor) | `Value` (decimal), `Disabled`, `HasChanged` (`Action<decimal>`) | Ídem. Parsea con la cultura del navegador/proceso. |
-| [SearchInput](../DistribuidoraGustavo.App/Shared/SearchInput.razor) | `SearchValue`, `Disabled`, `OnValueChanged`, `OnSearch`; método `Focus()` | *Debounce* de 2 s; Enter busca de inmediato. El `id` del input es fijo (`txtSearchInput`), así que solo puede haber uno por página. |
+| [SearchInput](../DistribuidoraGustavo.App/Shared/SearchInput.razor) | `SearchValue`, `Placeholder`, `Disabled`, `OnValueChanged`, `OnSearch`; método `Focus()` | *Debounce* de 2 s; Enter busca de inmediato. El `id` del input es fijo (`txtSearchInput`), así que solo puede haber uno por página. |
 | [HiddenFileInput](../DistribuidoraGustavo.App/Shared/HiddenFileInput.razor) | `OnChange` (`EventCallback<MultipartFormDataContent>`); método `Open()` | `InputFile` de Blazor oculto; `Open()` lo dispara por JS. Arma el multipart con el campo `file`. Tamaño máximo: 20 MB. |
 | [MainLayout](../DistribuidoraGustavo.App/Shared/MainLayout.razor) | — | Sidebar + barra superior con el nombre del usuario logueado. |
 | [LoginLayout](../DistribuidoraGustavo.App/Shared/LoginLayout.razor) | — | Layout sin menú. |

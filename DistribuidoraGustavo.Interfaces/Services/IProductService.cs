@@ -9,4 +9,5 @@ public interface IProductService : IBaseService
     Task<IList<PricedProductModel>> GetWithPrices(string filter, int? priceListId);
     Task<DTOResult<ProductModel>> Upsert(ProductModel model);
     Task<ProductModel> GetById(int productId);
+    Task<BoolResult> Delete(int productId);
 }

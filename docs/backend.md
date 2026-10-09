@@ -59,9 +59,10 @@ Todas las rutas llevan el prefijo `/api` (la tabla lo incluye). Salvo indicació
 | Método | Ruta | Body / Query | Respuesta | Notas |
 |---|---|---|---|---|
 | GET | `/api/Products` | `filter`, `priceListId` | `ListResult<ProductModel>` | Máx. 100 activos. Si `priceListId` existe, completa `UnitPrice` con el precio de esa lista. |
-| GET | `/api/Products/prices` | `filter`, `priceListId` | `ListResult<PricedProductModel>` | Máx. 300. `priceListId` 0 o ausente trae precios de todas las listas. |
+| GET | `/api/Products/prices` | `filter`, `priceListId` | `ListResult<PricedProductModel>` | Lo usan el listado de productos y la pantalla de precios. Máx. 300. `priceListId` 0 o ausente trae precios de todas las listas. |
 | GET | `/api/Products/{ProductId}` | — | `DTOResult<ProductModel>` | |
-| POST | `/api/Products` | `ProductModel` | `DTOResult<ProductModel>` | Upsert. Recalcula los precios de todas las listas. |
+| DELETE | `/api/Products/{productId}` | — | `BoolResult` | Baja lógica (`Active = false`). |
+| POST | `/api/Products` | `ProductModel` | `DTOResult<ProductModel>` | Upsert. Recalcula los precios de todas las listas. Un alta con el código de un producto dado de baja lo reactiva. |
 
 ### PriceLists — [PriceListsController](../DistribuidoraGustavo.API/Controllers/PriceListsController.cs)
 

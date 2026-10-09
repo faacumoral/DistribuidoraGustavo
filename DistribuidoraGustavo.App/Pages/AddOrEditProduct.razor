@@ -1,49 +1,148 @@
-﻿@page "/addoreditproduct/{ProductId:int}"
+@page "/addoreditproduct/{ProductId:int}"
 @page "/addoreditproduct"
 
+@using DistribuidoraGustavo.App.Utils
 @inherits AddOrEditProductBase
 
-<Alerts @ref=Alert></Alerts>
+<div class="simple-ui">
 
-<div class="row form-row">
-    <div class="col-2">
-        <span>Código:</span>
-    </div>
-    <div class="col-4">
-        <input @bind="@Product.Code" class="form-control" disabled="@(Processing || ProductId != 0 )" />
-    </div>
+    <a class="back-link" href="products">
+        <i class="bi bi-arrow-left"></i> Volver a productos
+    </a>
 
-    <div class="col-2">
-        <span>Nombre:</span>
-    </div>
-    <div class="col-4">
-        <input @bind="@Product.Name" class="form-control" disabled="@Processing" />
-    </div>
-
-</div>
-<div class="row form-row">
-    <div class="col-2">
-        <span>Descripción:</span>
-    </div>
-    <div class="col-4">
-        <input @bind="@Product.Description" class="form-control" disabled="@Processing" />
+    <div class="page-header">
+        @if (ProductId == 0)
+        {
+            <h1>Agregar producto</h1>
+        }
+        else if (string.IsNullOrEmpty(State.SavedName))
+        {
+            <h1>Editar producto</h1>
+        }
+        else
+        {
+            <div>
+                <div class="page-kicker">Editar producto</div>
+                <h1>(@Product.Code) @State.SavedName</h1>
+            </div>
+        }
     </div>
 
-    <div class="col-2">
-        <span>Precio base:</span>
-    </div>
-    <div class="col-4">
-        <DecimalInput HasChanged="(decimal n) => Product.BasePrice = n"
-                      Value="Product.BasePrice"
-                      Disabled="Processing"></DecimalInput>
-    </div>
-</div>
+    <Alerts @ref="Alert"></Alerts>
 
-<div class="rowform-row">
-    <div class="col-2">
-        <button class="btn btn-success" @onclick="SaveProduct">
-            Guardar &nbsp;
-            <i class="bi bi-check-circle"></i>
-        </button>
+    <div class="form-layout">
+
+        <div>
+            <div class="field-row short-first">
+                <div class="field">
+                    <label class="field-label" for="txtCode">Código</label>
+                    @if (ProductId == 0)
+                    {
+                        <input id="txtCode" class="form-control @(State.CodeError != null ? "is-invalid" : null)"
+                               placeholder="4003" disabled="@State.Processing"
+                               value="@Product.Code" @oninput="CodeChanged" />
+                        @if (State.CodeError != null)
+                        {
+                            <p class="field-error"><i class="bi bi-exclamation-circle"></i> @State.CodeError</p>
+                        }
+                    }
+                    else
+                    {
+                        <div class="readonly-value" title="El código no se puede cambiar"><i class="bi bi-lock"></i> @Product.Code</div>
+                    }
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="txtName">Nombre</label>
+                    <input id="txtName" class="form-control @(State.NameError != null ? "is-invalid" : null)"
+                           placeholder="Turrón de maní" disabled="@State.Processing"
+                           value="@Product.Name" @oninput="NameChanged" />
+                    @if (State.NameError != null)
+                    {
+                        <p class="field-error"><i class="bi bi-exclamation-circle"></i> @State.NameError</p>
+                    }
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <label class="field-label" for="txtPrice">Precio base</label>
+                    <p class="field-help">El precio de costo, sin recargo.</p>
+                    <div class="input-with-prefix">
+                        <span class="prefix">$</span>
+                        <input id="txtPrice" class="form-control @(State.PriceError != null ? "is-invalid" : null)"
+                               inputmode="decimal" placeholder="1500" disabled="@State.Processing"
+                               value="@State.PriceText" @oninput="PriceChanged" />
+                    </div>
+                    @if (State.PriceError != null)
+                    {
+                        <p class="field-error"><i class="bi bi-exclamation-circle"></i> @State.PriceError</p>
+                    }
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="txtQuantity">Unidades por bulto</label>
+                    <p class="field-help">Cuántas unidades trae la caja cerrada.</p>
+                    <input id="txtQuantity" class="form-control @(State.QuantityError != null ? "is-invalid" : null)"
+                           inputmode="numeric" placeholder="12" disabled="@State.Processing"
+                           value="@State.QuantityText" @oninput="QuantityChanged" />
+                    @if (State.QuantityError != null)
+                    {
+                        <p class="field-error"><i class="bi bi-exclamation-circle"></i> @State.QuantityError</p>
+                    }
+                </div>
+            </div>
+
+            @if (ProductId != 0)
+            {
+                <div class="danger-zone">
+                    @if (!State.ConfirmingDelete)
+                    {
+                        <button class="btn btn-outline-danger" disabled="@State.Processing" @onclick="AskDelete">
+                            <i class="bi bi-trash3"></i> Dar de baja este producto
+                        </button>
+                    }
+                    else
+                    {
+                        <div class="confirm-box">
+                            <p><strong>¿Dar de baja "@Product.Name"?</strong></p>
+                            <p>No va a aparecer más en la lista de productos ni al armar una factura. Las facturas ya hechas no cambian.</p>
+                            <div class="form-actions">
+                                <button class="btn btn-danger" disabled="@State.Processing" @onclick="DeleteProduct">
+                                    <i class="bi bi-trash3"></i> Sí, dar de baja
+                                </button>
+                                <button class="btn btn-light" disabled="@State.Processing" @onclick="CancelDelete">
+                                    No, volver
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="summary-card">
+            @if (PriceLists.Count > 0)
+            {
+                <div class="summary-title">Así queda en cada lista</div>
+                @foreach (var priceList in PriceLists)
+                {
+                    <div class="summary-line">
+                        <span>@priceList.Name</span>
+                        <span class="summary-value">@PreviewPrice(priceList)</span>
+                    </div>
+                }
+            }
+            <div class="form-actions">
+                <button class="btn btn-success" disabled="@State.Processing" @onclick="SaveProduct">
+                    <i class="bi bi-check-circle"></i> Guardar
+                </button>
+                <button class="btn btn-outline-dark" disabled="@State.Processing" @onclick="Cancel">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+
     </div>
+
 </div>

@@ -14,7 +14,7 @@
 
 ## Precios
 
-Regla única, en [PriceListService.CalculatePrices](../DistribuidoraGustavo.Core/Services/PriceListService.cs#L127):
+Regla única, definida en [PriceCalculator](../DistribuidoraGustavo.Interfaces/Shared/PriceCalculator.cs) (compartida por la API y por la vista previa del formulario de producto) y aplicada en [PriceListService.CalculatePrices](../DistribuidoraGustavo.Core/Services/PriceListService.cs):
 
 ```
 Precio en lista = techo( PrecioBase × (1 + Percent / 100) )
@@ -31,9 +31,11 @@ Precio en lista = techo( PrecioBase × (1 + Percent / 100) )
 
 - Búsqueda ([ProductService.SearchProducts](../DistribuidoraGustavo.Core/Services/ProductService.cs#L24)): solo activos; el filtro busca por *contains* sin distinguir mayúsculas en nombre, código o descripción, como una sola cadena. Sin ordenamiento explícito. Límite 100 (listado y facturación) o 300 (pantalla de precios).
 - Alta: código y nombre obligatorios; el código no puede repetirse.
-- Modificación: cambia nombre, descripción y precio base. El código no se modifica.
-- `QuantityPerBox` **solo se carga por importación de Excel**; el formulario de producto no lo expone y el alta manual lo deja en 0.
-- No existe baja de productos (pendiente en `todo.txt`).
+- Modificación: cambia nombre, descripción, precio base y unidades por bulto. El código no se modifica.
+- `QuantityPerBox` (unidades por bulto) se carga desde el formulario de producto o por importación de Excel.
+- El formulario no tiene campo de descripción: al guardar copia el nombre a `Description`, igual que la importación de Excel.
+- Baja: es **lógica** (`Active = false`, [ProductService.Delete](../DistribuidoraGustavo.Core/Services/ProductService.cs)). El producto deja de aparecer en el listado, en la pantalla de precios y al facturar; las facturas que ya lo incluyen no cambian. Sus precios por lista se conservan.
+- Un producto dado de baja **vuelve a estar activo** de dos formas: si se da de alta otro con el mismo código (se reutiliza el registro con los datos nuevos) o si el código viene en un Excel importado.
 
 ## Importación de Excel
 

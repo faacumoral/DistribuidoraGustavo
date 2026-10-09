@@ -72,3 +72,267 @@ a, .btn-link {
 body {
     font-size: 13px !important;
 }
+
+/* ---- Pantallas simplificadas: letra y controles grandes, pensadas para escritorio.
+        Se activa envolviendo la página en <div class="simple-ui">. ---- */
+
+.simple-ui {
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+.simple-ui h1 {
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.simple-ui .page-kicker {
+    font-size: 17px;
+    color: #555;
+}
+
+.simple-ui .page-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.simple-ui .page-header .search-row {
+    flex: 1;
+    min-width: 320px;
+}
+
+.simple-ui .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 18px;
+    margin-bottom: 12px;
+    text-decoration: none;
+}
+
+.simple-ui .form-control {
+    height: 56px;
+    font-size: 20px;
+    padding: 0 16px;
+}
+
+.simple-ui .form-control.is-invalid {
+    border-width: 2px;
+}
+
+.simple-ui .btn {
+    min-height: 56px;
+    font-size: 19px;
+    padding: 0 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    white-space: nowrap;
+}
+
+/* formulario en dos columnas: campos a la izquierda, resumen y botones a la derecha */
+
+.simple-ui .form-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(320px, 1fr);
+    gap: 40px;
+    align-items: start;
+}
+
+.simple-ui .field-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.simple-ui .field-row.short-first {
+    grid-template-columns: 220px minmax(0, 1fr);
+}
+
+.simple-ui .field {
+    margin-bottom: 28px;
+}
+
+.simple-ui .field-label {
+    display: block;
+    font-size: 19px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.simple-ui .field-help {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+.simple-ui .field-error {
+    font-size: 17px;
+    color: #b02a37;
+    margin-top: 8px;
+}
+
+.simple-ui .readonly-value {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 56px;
+    font-size: 20px;
+    background-color: #f1f1f1;
+    border-radius: 6px;
+    padding: 0 16px;
+}
+
+.simple-ui .input-with-prefix {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.simple-ui .input-with-prefix .prefix {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.simple-ui .summary-card {
+    position: sticky;
+    top: 16px;
+    background-color: #e7f1ff;
+    color: #084298;
+    border-radius: 8px;
+    padding: 20px 24px;
+}
+
+.simple-ui .summary-card .summary-title {
+    font-size: 17px;
+    margin-bottom: 8px;
+}
+
+.simple-ui .summary-card .summary-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 8px 0;
+}
+
+.simple-ui .summary-card .summary-line + .summary-line {
+    border-top: 1px solid #b6d4fe;
+}
+
+.simple-ui .summary-card .summary-value {
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.simple-ui .summary-card .form-actions {
+    margin-top: 20px;
+}
+
+.simple-ui .summary-card .form-actions .btn {
+    flex: 1;
+}
+
+.simple-ui .summary-card .btn-outline-dark {
+    background-color: #fff;
+}
+
+.simple-ui .summary-card .btn-outline-dark:hover {
+    background-color: #212529;
+}
+
+.simple-ui .form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.simple-ui .danger-zone {
+    margin-top: 12px;
+}
+
+.simple-ui .confirm-box {
+    background-color: #f8d7da;
+    color: #58151c;
+    border-radius: 6px;
+    padding: 16px;
+}
+
+.simple-ui .search-row {
+    display: flex;
+    gap: 12px;
+}
+
+.simple-ui .search-row .form-control {
+    flex: 1;
+}
+
+/* listado en tabla */
+
+.simple-ui .data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.simple-ui .data-table th {
+    font-size: 16px;
+    font-weight: 600;
+    color: #555;
+    padding: 10px 12px;
+    border-bottom: 2px solid #adb5bd;
+    white-space: nowrap;
+}
+
+.simple-ui .data-table td {
+    font-size: 19px;
+    padding: 12px;
+    border-bottom: 1px solid #dee2e6;
+    vertical-align: middle;
+}
+
+.simple-ui .data-table tbody tr:hover {
+    background-color: #f5f8ff;
+}
+
+.simple-ui .data-table tr.clickable {
+    cursor: pointer;
+}
+
+.simple-ui .data-table .num {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.simple-ui .data-table .strong {
+    font-weight: 600;
+}
+
+.simple-ui .data-table .actions {
+    text-align: right;
+    width: 1%;
+}
+
+.simple-ui .data-table .btn {
+    min-height: 48px;
+}
+
+.simple-ui .card-text {
+    font-size: 18px;
+}
+
+@media (max-width: 991px) {
+    .simple-ui .form-layout,
+    .simple-ui .field-row,
+    .simple-ui .field-row.short-first {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+    }
+
+    .simple-ui .summary-card {
+        position: static;
+    }
+}

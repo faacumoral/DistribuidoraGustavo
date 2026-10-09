@@ -97,6 +97,7 @@ namespace DistribuidoraGustavo.Core.Services
                     Description = product.Description,
                     Name = product.Name,
                     QuantityPerBox = product.QuantityPerBox,
+                    BasePrice = product.BasePrice,
                     Prices = prices.Where(p => p.ProductId == product.ProductId).Select(
                         pr => new ProductPriceModel
                         { 
@@ -116,33 +117,33 @@ namespace DistribuidoraGustavo.Core.Services
         {
             var product = await _context.Products.Include(p => p.ProductsPriceLists).FirstOrDefaultAsync(p => p.ProductId == model.ProductId);
 
+            if (string.IsNullOrEmpty(model.Name))
+                return DTOResult<ProductModel>.Error($"El nombre es obligatorio");
+
             if (product == null)
             {
-                if (string.IsNullOrEmpty(model.Code) || string.IsNullOrEmpty(model.Name))
+                if (string.IsNullOrEmpty(model.Code))
                     return DTOResult<ProductModel>.Error($"Código y nombre son campos obligatorios");
 
-                var existingCode = _context.Products.Any(p => p.Code == model.Code);
-                if (existingCode)
+                product = await _context.Products.Include(p => p.ProductsPriceLists).FirstOrDefaultAsync(p => p.Code == model.Code);
+
+                if (product != null && product.Active == true)
                     return DTOResult<ProductModel>.Error($"El código '{model.Code}' ya esta registrado");
 
-                product = new Product
+                if (product == null)
                 {
-                    BasePrice = model.BasePrice,
-                    Name = model.Name,
-                    Description = model.Description,
-                    Code = model.Code,
-                    Active = true,
-                };
+                    product = new Product { Code = model.Code };
+                    _context.Products.Add(product);
+                }
 
-                _context.Products.Add(product);
+                // a deleted product with the same code comes back with the new data
+                product.Active = true;
             }
-            else
-            { 
-                product.BasePrice = model.BasePrice;
-                product.Name = model.Name;
-                product.Description = model.Description;
-                _context.Products.Update(product);
-            }
+
+            product.BasePrice = model.BasePrice;
+            product.Name = model.Name;
+            product.Description = model.Description;
+            product.QuantityPerBox = model.QuantityPerBox;
 
             var pricesList = await _context.PriceLists.ToListAsync();
             _priceListService.CalculatePrices(product, pricesList);
@@ -150,6 +151,19 @@ namespace DistribuidoraGustavo.Core.Services
             await _context.SaveChangesAsync();
 
             return DTOResult<ProductModel>.Ok(product.ToModel());
+        }
+
+        public async Task<BoolResult> Delete(int productId)
+        {
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == productId);
+
+            if (product == null) return BoolResult.Error("El producto no existe");
+
+            // logical delete: old invoices keep pointing to the product
+            product.Active = false;
+            await _context.SaveChangesAsync();
+
+            return BoolResult.Ok();
         }
 
         public async Task<ProductModel> GetById(int productId)

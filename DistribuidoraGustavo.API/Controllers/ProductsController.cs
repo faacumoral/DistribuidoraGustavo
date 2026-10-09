@@ -81,5 +81,20 @@ namespace DistribuidoraGustavo.API.Controllers
                 return DTOResult<ProductModel>.Error(ex);
             }
         }
+
+        [HttpDelete("{productId:int}")]
+        public async Task<BoolResult> Delete([FromRoute] int productId)
+        {
+            try
+            {
+                var result = await _productService.Delete(productId);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+                return BoolResult.Error(ex);
+            }
+        }
     }
 }

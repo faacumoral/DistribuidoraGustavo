@@ -25,6 +25,9 @@
     [Parameter]
     public string SearchValue { get; set; }
 
+    [Parameter]
+    public string Placeholder { get; set; }
+
     private string ElementId { get; set; } = Guid.NewGuid().ToString().Replace("-", "");
 
     protected void TimerEventWrapper(object? sender, ElapsedEventArgs e)
@@ -55,5 +58,6 @@
 
 <input disabled="@Disabled"
        class="form-control"
+       placeholder="@Placeholder"
        @bind="SearchValue"
        @bind:event="oninput" @onkeyup="WaitAndSearch" id="txtSearchInput" />

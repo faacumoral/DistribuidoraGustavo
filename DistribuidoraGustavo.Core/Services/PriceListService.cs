@@ -2,6 +2,7 @@
 using DistribuidoraGustavo.Interfaces.Models;
 using DistribuidoraGustavo.Interfaces.Parsers;
 using DistribuidoraGustavo.Interfaces.Services;
+using DistribuidoraGustavo.Interfaces.Shared;
 using Microsoft.EntityFrameworkCore;
 
 namespace DistribuidoraGustavo.Core.Services
@@ -128,7 +129,7 @@ namespace DistribuidoraGustavo.Core.Services
         {
             foreach (var priceList in pricesLists)
             {
-                var newPrice = Math.Ceiling(product.BasePrice + (product.BasePrice * priceList.Percent / 100));
+                var newPrice = PriceCalculator.Calculate(product.BasePrice, priceList.Percent);
 
                 var productPrice = product.ProductsPriceLists.FirstOrDefault(ppl => ppl.PriceListId == priceList.PriceListId);
 
