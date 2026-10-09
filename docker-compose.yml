@@ -1,0 +1,72 @@
+# Entorno local completo: SQL Server + migraciones + datos de prueba + aplicación.
+#   docker compose up --build
+# App:     http://localhost:5080
+# Swagger: http://localhost:5080/swagger
+# SQL:     localhost,14333 (usuario sa)
+# Si algún puerto está ocupado: APP_PORT=5090 SQL_PORT=14334 docker compose up --build
+#
+# Solo para desarrollo: las claves que figuran acá no deben usarse en producción.
+
+x-sql-password: &sql-password ${MSSQL_SA_PASSWORD:-Distribuidora.Local.2026}
+
+services:
+  sql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: *sql-password
+    ports:
+      - "${SQL_PORT:-14333}:1433"
+    volumes:
+      - sql-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -Q \"SELECT 1\" > /dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 15s
+
+  # Crea la base si no existe y aplica las migraciones de EF Core pendientes.
+  migrations:
+    build:
+      context: .
+      target: migrations
+    environment:
+      MSSQL_SA_PASSWORD: *sql-password
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - ./efbundle --connection "Server=sql;Database=DistribuidoraGustavo;User Id=sa;Password=$$MSSQL_SA_PASSWORD;Encrypt=false"
+    depends_on:
+      sql:
+        condition: service_healthy
+
+  # Carga listas de precios y un usuario de prueba (ver docker/seed.sql). Se puede correr más de una vez.
+  seed:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      MSSQL_SA_PASSWORD: *sql-password
+    volumes:
+      - ./docker/seed.sql:/seed.sql:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - /opt/mssql-tools18/bin/sqlcmd -C -b -S sql -U sa -P "$$MSSQL_SA_PASSWORD" -d DistribuidoraGustavo -i /seed.sql
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+
+  app:
+    build:
+      context: .
+      target: app
+    environment:
+      # Development: toma JWT_* y EncryptKey de appsettings.Development.json
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DistribuidoraGustavo: "Server=sql;Database=DistribuidoraGustavo;User Id=sa;Password=${MSSQL_SA_PASSWORD:-Distribuidora.Local.2026};Encrypt=false"
+    ports:
+      - "${APP_PORT:-5080}:8080"
+    depends_on:
+      seed:
+        condition: service_completed_successfully
+
+volumes:
+  sql-data:
