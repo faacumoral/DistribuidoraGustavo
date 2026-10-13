@@ -9,4 +9,6 @@ public class ProductModel : BaseModel
     public decimal UnitPrice { get; set; }
     public decimal BasePrice { get; set; }
     public int QuantityPerBox { get; set; }
+    public int? FamilyId { get; set; }
+    public string? FamilyName { get; set; }
 }

@@ -22,7 +22,9 @@ namespace DistribuidoraGustavo.Core.Services
 
         private async Task<IList<ProductModel>> SearchProducts(string filter, int quantity = 100)
         {
-            var productsDb = _context.Products.Where(p => p.Active == true);
+            var productsDb = _context.Products
+                .Include(p => p.ProductsFamilies).ThenInclude(pf => pf.Family)
+                .Where(p => p.Active == true);
 
             if (!string.IsNullOrEmpty(filter))
             {
@@ -32,10 +34,12 @@ namespace DistribuidoraGustavo.Core.Services
                    p.Name.ToLower().Contains(filter)
                 || p.Code.ToLower().Contains(filter)
                 || (p.Description != null && p.Description!.ToLower().Contains(filter))
+                || p.ProductsFamilies.Any(pf => pf.Family.Name.ToLower().Contains(filter))
                 );
             }
 
-            var products = await productsDb.Take(quantity).ToListAsync();
+            // explicit order: a stable cut when a big family exceeds the limit
+            var products = await productsDb.OrderBy(p => p.Code).Take(quantity).ToListAsync();
 
             var productsModel = products.Select(CastEfToModel.ToModel).ToList();
 
@@ -98,6 +102,8 @@ namespace DistribuidoraGustavo.Core.Services
                     Name = product.Name,
                     QuantityPerBox = product.QuantityPerBox,
                     BasePrice = product.BasePrice,
+                    FamilyId = product.FamilyId,
+                    FamilyName = product.FamilyName,
                     Prices = prices.Where(p => p.ProductId == product.ProductId).Select(
                         pr => new ProductPriceModel
                         { 
@@ -115,7 +121,10 @@ namespace DistribuidoraGustavo.Core.Services
 
         public async Task<DTOResult<ProductModel>> Upsert(ProductModel model)
         {
-            var product = await _context.Products.Include(p => p.ProductsPriceLists).FirstOrDefaultAsync(p => p.ProductId == model.ProductId);
+            var product = await _context.Products
+                .Include(p => p.ProductsPriceLists)
+                .Include(p => p.ProductsFamilies).ThenInclude(pf => pf.Family)
+                .FirstOrDefaultAsync(p => p.ProductId == model.ProductId);
 
             if (string.IsNullOrEmpty(model.Name))
                 return DTOResult<ProductModel>.Error($"El nombre es obligatorio");
@@ -125,7 +134,10 @@ namespace DistribuidoraGustavo.Core.Services
                 if (string.IsNullOrEmpty(model.Code))
                     return DTOResult<ProductModel>.Error($"Código y nombre son campos obligatorios");
 
-                product = await _context.Products.Include(p => p.ProductsPriceLists).FirstOrDefaultAsync(p => p.Code == model.Code);
+                product = await _context.Products
+                    .Include(p => p.ProductsPriceLists)
+                    .Include(p => p.ProductsFamilies).ThenInclude(pf => pf.Family)
+                    .FirstOrDefaultAsync(p => p.Code == model.Code);
 
                 if (product != null && product.Active == true)
                     return DTOResult<ProductModel>.Error($"El código '{model.Code}' ya esta registrado");
@@ -145,12 +157,49 @@ namespace DistribuidoraGustavo.Core.Services
             product.Description = model.Description;
             product.QuantityPerBox = model.QuantityPerBox;
 
+            var familyError = await SetFamily(product, model.FamilyId);
+            if (familyError != null)
+                return DTOResult<ProductModel>.Error(familyError);
+
             var pricesList = await _context.PriceLists.ToListAsync();
             _priceListService.CalculatePrices(product, pricesList);
 
             await _context.SaveChangesAsync();
 
             return DTOResult<ProductModel>.Ok(product.ToModel());
+        }
+
+        // one family per product: replaces the link, or removes it when familyId is null
+        private async Task<string> SetFamily(Product product, int? familyId)
+        {
+            var current = product.ProductsFamilies.FirstOrDefault();
+
+            if (familyId == null || familyId == 0)
+            {
+                if (current != null)
+                {
+                    _context.ProductsFamilies.Remove(current);
+                    product.ProductsFamilies.Remove(current);
+                }
+                return null;
+            }
+
+            if (current?.FamilyId == familyId) return null;
+
+            var family = await _context.Families.FirstOrDefaultAsync(f => f.FamilyId == familyId);
+            if (family == null) return "La familia no existe";
+
+            if (current != null)
+            {
+                current.Family = family;
+                current.FamilyId = family.FamilyId;
+            }
+            else
+            {
+                product.ProductsFamilies.Add(new ProductsFamily { Family = family });
+            }
+
+            return null;
         }
 
         public async Task<BoolResult> Delete(int productId)
@@ -168,7 +217,9 @@ namespace DistribuidoraGustavo.Core.Services
 
         public async Task<ProductModel> GetById(int productId)
         { 
-            var product = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == productId);
+            var product = await _context.Products
+                .Include(p => p.ProductsFamilies).ThenInclude(pf => pf.Family)
+                .FirstOrDefaultAsync(p => p.ProductId == productId);
             return product.ToModel();
         }
     }

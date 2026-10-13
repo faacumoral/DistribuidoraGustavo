@@ -1,0 +1,109 @@
+@page "/addoreditfamily/{FamilyId:int}"
+@page "/addoreditfamily"
+
+@using DistribuidoraGustavo.App.Utils
+@inherits AddOrEditFamilyBase
+
+<div class="simple-ui">
+
+    <a class="back-link" href="families">
+        <i class="bi bi-arrow-left"></i> Volver a familias
+    </a>
+
+    <div class="page-header">
+        @if (FamilyId == 0)
+        {
+            <h1>Agregar familia</h1>
+        }
+        else if (string.IsNullOrEmpty(State.SavedName))
+        {
+            <h1>Editar familia</h1>
+        }
+        else
+        {
+            <div>
+                <div class="page-kicker">Editar familia</div>
+                <h1>@State.SavedName</h1>
+            </div>
+        }
+    </div>
+
+    <Alerts @ref="Alert"></Alerts>
+
+    <div class="form-layout">
+
+        <div>
+            <div class="field-row">
+                <div class="field">
+                    <label class="field-label" for="txtName">Nombre</label>
+                    <input id="txtName" class="form-control @(State.NameError != null ? "is-invalid" : null)"
+                           placeholder="Gaseosas" disabled="@State.Processing"
+                           value="@Family.Name" @oninput="NameChanged" />
+                    @if (State.NameError != null)
+                    {
+                        <p class="field-error"><i class="bi bi-exclamation-circle"></i> @State.NameError</p>
+                    }
+                </div>
+
+                <div class="field">
+                    <label class="field-label" for="txtSuffix">Subfijo para los códigos</label>
+                    <p class="field-help">Los productos nuevos de esta familia arrancan con este código. Por ejemplo: GAS</p>
+                    <input id="txtSuffix" class="form-control @(State.SuffixError != null ? "is-invalid" : null)"
+                           placeholder="GAS" disabled="@State.Processing"
+                           value="@Family.CodeSuffix" @oninput="SuffixChanged" />
+                    @if (State.SuffixError != null)
+                    {
+                        <p class="field-error"><i class="bi bi-exclamation-circle"></i> @State.SuffixError</p>
+                    }
+                </div>
+            </div>
+
+            @if (FamilyId != 0)
+            {
+                <div class="danger-zone">
+                    @if (Family.ProductsCount > 0)
+                    {
+                        <button class="btn btn-outline-danger" disabled>
+                            <i class="bi bi-trash3"></i> Eliminar esta familia
+                        </button>
+                        <p class="field-help">Solo se puede eliminar una familia sin productos. Esta tiene @Family.ProductsCount.</p>
+                    }
+                    else if (!State.ConfirmingDelete)
+                    {
+                        <button class="btn btn-outline-danger" disabled="@State.Processing" @onclick="AskDelete">
+                            <i class="bi bi-trash3"></i> Eliminar esta familia
+                        </button>
+                    }
+                    else
+                    {
+                        <div class="confirm-box">
+                            <p><strong>¿Eliminar "@Family.Name"?</strong></p>
+                            <p>La familia se borra definitivamente.</p>
+                            <div class="form-actions">
+                                <button class="btn btn-danger" disabled="@State.Processing" @onclick="DeleteFamily">
+                                    <i class="bi bi-trash3"></i> Sí, eliminar
+                                </button>
+                                <button class="btn btn-light" disabled="@State.Processing" @onclick="CancelDelete">
+                                    No, volver
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="summary-card">
+            <div class="form-actions">
+                <button class="btn btn-success" disabled="@State.Processing" @onclick="SaveFamily">
+                    <i class="bi bi-check-circle"></i> Guardar
+                </button>
+                <button class="btn btn-outline-dark" disabled="@State.Processing" @onclick="Cancel">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+</div>

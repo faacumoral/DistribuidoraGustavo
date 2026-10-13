@@ -41,6 +41,8 @@ public class AddOrEditProductBase : ComponentBase
 
     public IList<PriceListModel> PriceLists { get; set; } = new List<PriceListModel>();
 
+    public IList<FamilyModel> Families { get; set; } = new List<FamilyModel>();
+
     public AddOrEditProductState State { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
@@ -51,6 +53,11 @@ public class AddOrEditProductBase : ComponentBase
 
         if (priceListResult.Success)
             PriceLists = priceListResult.ResultOk.OrderBy(pl => pl.PriceListId).ToList();
+
+        var familiesResult = await ApiClient.Send<ListResult<FamilyModel>>(ApiRequest.BuildGet("Families"));
+
+        if (familiesResult.Success)
+            Families = familiesResult.ResultOk;
 
         if (ProductId != 0)
         {
@@ -80,6 +87,34 @@ public class AddOrEditProductBase : ComponentBase
         {
             Alert.ShowError(productResult.ResultError.FriendlyErrorMessage, false);
         }
+    }
+
+    protected void FamilyChanged(ChangeEventArgs e)
+    {
+        var previous = Families.FirstOrDefault(f => f.FamilyId == Product.FamilyId);
+        var selected = int.TryParse(e.Value?.ToString(), out int familyId)
+            ? Families.FirstOrDefault(f => f.FamilyId == familyId)
+            : null;
+
+        Product.FamilyId = selected?.FamilyId;
+        Product.FamilyName = selected?.Name;
+
+        // the code is read-only when editing; on a new product, only the previous suffix is swapped
+        if (ProductId != 0) return;
+
+        var code = Product.Code ?? "";
+        var oldSuffix = previous?.CodeSuffix ?? "";
+        var newSuffix = selected?.CodeSuffix ?? "";
+
+        if (oldSuffix != "" && code.StartsWith(oldSuffix, StringComparison.OrdinalIgnoreCase))
+            code = code.Substring(oldSuffix.Length);
+
+        if (newSuffix != "" && !code.StartsWith(newSuffix, StringComparison.OrdinalIgnoreCase))
+            code = newSuffix + code;
+
+        Product.Code = code;
+        State.CodeError = null;
+        HideAlertIfFixed();
     }
 
     protected void CodeChanged(ChangeEventArgs e)
@@ -130,6 +165,8 @@ public class AddOrEditProductBase : ComponentBase
     {
         if (ProductId == 0 && string.IsNullOrWhiteSpace(Product.Code))
             State.CodeError = "Escribí el código del producto.";
+        else if (ProductId == 0 && Families.Any(f => string.Equals(f.CodeSuffix, Product.Code, StringComparison.OrdinalIgnoreCase)))
+            State.CodeError = "Completá el código: agregale el número después del subfijo.";
 
         if (string.IsNullOrWhiteSpace(Product.Name))
             State.NameError = "Escribí el nombre del producto.";

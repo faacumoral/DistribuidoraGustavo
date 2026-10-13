@@ -12,6 +12,8 @@ erDiagram
     PriceLists ||--o{ Invoices : "PriceListID"
     PriceLists ||--o{ Products_PriceLists : ""
     Products   ||--o{ Products_PriceLists : ""
+    Families   ||--o{ Products_Families : ""
+    Products   ||--o| Products_Families : ""
     Products   ||--o{ Invoices_Products : ""
     Invoices   ||--o{ Invoices_Products : ""
     Clients    ||--o{ Invoices : ""
@@ -33,6 +35,12 @@ erDiagram
                bit Active
                decimal BasePrice
                int QuantityPerBox }
+    Families { int FamilyID PK
+               nvarchar Name UK
+               varchar CodeSuffix UK }
+    Products_Families { int ProductFamilyID PK
+                        int ProductID FK,UK
+                        int FamilyID FK }
     Products_PriceLists { int ProductPriceListID PK
                           int ProductID FK
                           int PriceListID FK
@@ -81,6 +89,8 @@ erDiagram
 | `Clients` | Clientes | `InvoicePrefix` identifica las facturas del cliente (unicidad validada solo en código). `ActualBalance` es el saldo de cuenta corriente desnormalizado. |
 | `PriceLists` | Listas de precios | `Name` máx. 10 caracteres. `Percent` es el recargo sobre el precio base. |
 | `Products` | Productos | `Code` sin índice único (validado en código). `Active` para baja lógica. |
+| `Families` | Familias de productos | `Name` (máx. 100) y `CodeSuffix` (máx. 20) únicos. El subfijo es el prefijo con el que arrancan los códigos de los productos nuevos. |
+| `Products_Families` | Familia de cada producto | Tabla aparte a propósito: hoy un producto tiene **una** familia (índice único en `ProductID`); para permitir varias basta con quitar ese índice. Un producto sin fila no tiene familia. |
 | `Products_PriceLists` | Precio de cada producto en cada lista | Valor **calculado y persistido**. Sin unicidad sobre (`ProductID`, `PriceListID`). |
 | `Invoices` | Cabecera de factura | `InvoiceNumber` único global, formato `{prefijo}-{n}`. `Active` para baja lógica (default `0` en la base; el código siempre inserta `true`). |
 | `Invoices_Products` | Ítems de factura | Guarda `UnitPrice`, `Quantity` y `Amount` al momento de facturar. |
@@ -94,7 +104,7 @@ Fechas en UTC (`GETUTCDATE()` como default en `Invoices.CreatedDate` y `Transact
 ## Capa EF Core
 
 - Las entidades de [EfModels/](../DistribuidoraGustavo.Data/EfModels/) y el mapeo en [DistribuidoraGustavoContext.cs](../DistribuidoraGustavo.Data/EfModels/DistribuidoraGustavoContext.cs) se **mantienen a mano**. Nacieron de un scaffold (de ahí el estilo y las clases `partial`), pero ya no se regeneran.
-- Nombres de entidades: `Invoices_Products` → `InvoicesProduct`, `Products_PriceLists` → `ProductsPriceList`.
+- Nombres de entidades: `Invoices_Products` → `InvoicesProduct`, `Products_PriceLists` → `ProductsPriceList`, `Products_Families` → `ProductsFamily`.
 - Los nombres de columna terminados en `ID` se fijan con `HasColumnName` para respetar el esquema original.
 - No hay lazy loading: las navegaciones se cargan con `Include` explícito.
 - Las FKs están configuradas con `DeleteBehavior.ClientSetNull` (sin borrado en cascada).

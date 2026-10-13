@@ -1,0 +1,65 @@
+@page "/families"
+
+@inherits FamiliesBase
+
+<div class="simple-ui">
+
+    <Alerts @ref="Alert" Seconds="8"></Alerts>
+
+    <div class="page-header">
+        <h1>Familias</h1>
+        <div class="search-row">
+            <SearchInput Disabled="@State.Processing"
+                         OnSearch="SearchFamilies"
+                         OnValueChanged="(string newValue) => State.Filter = newValue"
+                         SearchValue="@State.Filter"
+                         Placeholder="Gaseosas, GAS"
+                         @ref="SearchInput"></SearchInput>
+            <button class="btn btn-outline-dark" disabled="@State.Processing" @onclick="SearchFamilies">
+                <i class="bi bi-search"></i> Buscar
+            </button>
+        </div>
+        <button class="btn btn-success" @onclick="AddFamily">
+            <i class="bi bi-plus-lg"></i> Agregar familia
+        </button>
+    </div>
+
+    <Spinner Show="@State.Processing"></Spinner>
+
+    @if (!State.Processing)
+    {
+        @if (Families.Count == 0)
+        {
+            <p>No hay familias con ese nombre o subfijo.</p>
+        }
+        else
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Subfijo</th>
+                        <th class="num">Productos</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var family in Families)
+                    {
+                        <tr class="clickable" title="Editar @family.Name" @onclick="() => UpdateFamily(family)">
+                            <td class="strong">@family.Name</td>
+                            <td><span class="pill">@family.CodeSuffix</span></td>
+                            <td class="num">@family.ProductsCount</td>
+                            <td class="actions">
+                                <button class="btn btn-dark">
+                                    <i class="bi bi-pencil-square"></i> Editar
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    }
+
+</div>

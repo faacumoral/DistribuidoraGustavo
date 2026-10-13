@@ -81,6 +81,8 @@ Los parámetros de query se arman a mano en el string de la URL, sin `Uri.Escape
 | `Prices` | `/prices` | [Prices](../DistribuidoraGustavo.App/Pages/Prices.razor) | Productos con precio por lista; importación de Excel. |
 | `Products` | `/products` | [Products](../DistribuidoraGustavo.App/Pages/Products.razor) | Listado y búsqueda. |
 | `AddOrEditProduct` | `/addoreditproduct[/{ProductId:int}]` | [AddOrEditProduct](../DistribuidoraGustavo.App/Pages/AddOrEditProduct.razor) | Alta y edición. |
+| `Families` | `/families` | [Families](../DistribuidoraGustavo.App/Pages/Families.razor) | Listado y búsqueda de familias. |
+| `AddOrEditFamily` | `/addoreditfamily[/{FamilyId:int}]` | [AddOrEditFamily](../DistribuidoraGustavo.App/Pages/AddOrEditFamily.razor) | Alta, edición y baja (bloqueada si tiene productos). |
 | `Balances` | `/balances` | [Balances](../DistribuidoraGustavo.App/Pages/Balances.razor) | Movimientos, saldo del cliente y registro de pagos. |
 
 La navegación usa `Views.X.ToString()` como URL relativa; funciona porque el ruteo de Blazor no distingue mayúsculas. El menú lateral está en [NavMenu.razor](../DistribuidoraGustavo.App/Shared/NavMenu.razor).
@@ -121,7 +123,9 @@ Convenciones observadas:
 
 ## Pantallas simplificadas (`simple-ui`)
 
-El usuario principal es una persona mayor con poco contacto con la tecnología. Las pantallas se van pasando de a una a un estilo de letra y controles grandes, definido una sola vez en [app.css](../DistribuidoraGustavo.App/wwwroot/css/app.css) bajo la clase `simple-ui`. Ya migradas: `Products` y `AddOrEditProduct`; el resto sigue con el estilo anterior (letra de 13 px).
+El usuario principal es una persona mayor con poco contacto con la tecnología. Las pantallas se van pasando de a una a un estilo de letra y controles grandes, definido una sola vez en [app.css](../DistribuidoraGustavo.App/wwwroot/css/app.css) bajo la clase `simple-ui`. Ya migradas: `Products`, `AddOrEditProduct`, `Families` y `AddOrEditFamily`; el resto sigue con letra de 14 px.
+
+El aspecto general (tipografía del sistema, superficies planas, bordes finos de 0,5 px, botones de contorno y verde claro para la acción principal, colores de aviso suaves) se define con variables CSS al principio de la sección de tema de [app.css](../DistribuidoraGustavo.App/wwwroot/css/app.css) y se aplica a todo el sitio sobreescribiendo Bootstrap; la barra lateral está en [NavMenu.razor.css](../DistribuidoraGustavo.App/Shared/NavMenu.razor.css) y [MainLayout.razor.css](../DistribuidoraGustavo.App/Shared/MainLayout.razor.css). `simple-ui` solo agrega los tamaños grandes.
 
 Para migrar una pantalla se envuelve su contenido en `<div class="simple-ui">` y se usan estas clases:
 

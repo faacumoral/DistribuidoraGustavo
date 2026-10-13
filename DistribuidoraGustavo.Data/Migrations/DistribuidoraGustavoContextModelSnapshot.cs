@@ -59,6 +59,37 @@ namespace DistribuidoraGustavo.Data.Migrations
                     b.ToTable("Clients");
                 });
 
+            modelBuilder.Entity("DistribuidoraGustavo.Data.EfModels.Family", b =>
+                {
+                    b.Property<int>("FamilyId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("FamilyID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FamilyId"));
+
+                    b.Property<string>("CodeSuffix")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("FamilyId");
+
+                    b.HasIndex(new[] { "CodeSuffix" }, "UQ_Families_CodeSuffix")
+                        .IsUnique();
+
+                    b.HasIndex(new[] { "Name" }, "UQ_Families_Name")
+                        .IsUnique();
+
+                    b.ToTable("Families");
+                });
+
             modelBuilder.Entity("DistribuidoraGustavo.Data.EfModels.ImportedFile", b =>
                 {
                     b.Property<int>("ImportedFileId")
@@ -229,6 +260,33 @@ namespace DistribuidoraGustavo.Data.Migrations
                     b.HasKey("ProductId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("DistribuidoraGustavo.Data.EfModels.ProductsFamily", b =>
+                {
+                    b.Property<int>("ProductFamilyId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("ProductFamilyID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductFamilyId"));
+
+                    b.Property<int>("FamilyId")
+                        .HasColumnType("int")
+                        .HasColumnName("FamilyID");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int")
+                        .HasColumnName("ProductID");
+
+                    b.HasKey("ProductFamilyId");
+
+                    b.HasIndex("FamilyId");
+
+                    b.HasIndex(new[] { "ProductId" }, "UQ_Products_Families_ProductID")
+                        .IsUnique();
+
+                    b.ToTable("Products_Families", (string)null);
                 });
 
             modelBuilder.Entity("DistribuidoraGustavo.Data.EfModels.ProductsPriceList", b =>
@@ -407,6 +465,25 @@ namespace DistribuidoraGustavo.Data.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("DistribuidoraGustavo.Data.EfModels.ProductsFamily", b =>
+                {
+                    b.HasOne("DistribuidoraGustavo.Data.EfModels.Family", "Family")
+                        .WithMany("ProductsFamilies")
+                        .HasForeignKey("FamilyId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Products_Families_FamilyID");
+
+                    b.HasOne("DistribuidoraGustavo.Data.EfModels.Product", "Product")
+                        .WithMany("ProductsFamilies")
+                        .HasForeignKey("ProductId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Products_Families_ProductID");
+
+                    b.Navigation("Family");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("DistribuidoraGustavo.Data.EfModels.ProductsPriceList", b =>
                 {
                     b.HasOne("DistribuidoraGustavo.Data.EfModels.PriceList", "PriceList")
@@ -455,6 +532,11 @@ namespace DistribuidoraGustavo.Data.Migrations
                     b.Navigation("Transactions");
                 });
 
+            modelBuilder.Entity("DistribuidoraGustavo.Data.EfModels.Family", b =>
+                {
+                    b.Navigation("ProductsFamilies");
+                });
+
             modelBuilder.Entity("DistribuidoraGustavo.Data.EfModels.Invoice", b =>
                 {
                     b.Navigation("InvoicesProducts");
@@ -472,6 +554,8 @@ namespace DistribuidoraGustavo.Data.Migrations
             modelBuilder.Entity("DistribuidoraGustavo.Data.EfModels.Product", b =>
                 {
                     b.Navigation("InvoicesProducts");
+
+                    b.Navigation("ProductsFamilies");
 
                     b.Navigation("ProductsPriceLists");
                 });

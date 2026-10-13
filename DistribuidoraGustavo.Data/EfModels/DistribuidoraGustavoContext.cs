@@ -17,6 +17,8 @@ public partial class DistribuidoraGustavoContext : DbContext
 
     public virtual DbSet<Client> Clients { get; set; }
 
+    public virtual DbSet<Family> Families { get; set; }
+
     public virtual DbSet<ImportedFile> ImportedFiles { get; set; }
 
     public virtual DbSet<Invoice> Invoices { get; set; }
@@ -28,6 +30,8 @@ public partial class DistribuidoraGustavoContext : DbContext
     public virtual DbSet<Product> Products { get; set; }
 
     public virtual DbSet<ProductsPriceList> ProductsPriceLists { get; set; }
+
+    public virtual DbSet<ProductsFamily> ProductsFamilies { get; set; }
 
     public virtual DbSet<Transaction> Transactions { get; set; }
 
@@ -56,6 +60,20 @@ public partial class DistribuidoraGustavoContext : DbContext
             entity.HasOne(d => d.DefaultPriceList).WithMany(p => p.Clients)
                 .HasForeignKey(d => d.DefaultPriceListId)
                 .HasConstraintName("FK_Clients_PriceListID");
+        });
+
+        modelBuilder.Entity<Family>(entity =>
+        {
+            entity.HasKey(e => e.FamilyId);
+
+            entity.HasIndex(e => e.Name, "UQ_Families_Name").IsUnique();
+            entity.HasIndex(e => e.CodeSuffix, "UQ_Families_CodeSuffix").IsUnique();
+
+            entity.Property(e => e.FamilyId).HasColumnName("FamilyID");
+            entity.Property(e => e.Name).HasMaxLength(100);
+            entity.Property(e => e.CodeSuffix)
+                .HasMaxLength(20)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<ImportedFile>(entity =>
@@ -141,6 +159,30 @@ public partial class DistribuidoraGustavoContext : DbContext
             entity.Property(e => e.Code).IsUnicode(false);
             entity.Property(e => e.Description).IsUnicode(false);
             entity.Property(e => e.Name).IsUnicode(false);
+        });
+
+        modelBuilder.Entity<ProductsFamily>(entity =>
+        {
+            entity.HasKey(e => e.ProductFamilyId);
+
+            entity.ToTable("Products_Families");
+
+            // one family per product for now; drop this index to allow several
+            entity.HasIndex(e => e.ProductId, "UQ_Products_Families_ProductID").IsUnique();
+
+            entity.Property(e => e.ProductFamilyId).HasColumnName("ProductFamilyID");
+            entity.Property(e => e.FamilyId).HasColumnName("FamilyID");
+            entity.Property(e => e.ProductId).HasColumnName("ProductID");
+
+            entity.HasOne(d => d.Family).WithMany(p => p.ProductsFamilies)
+                .HasForeignKey(d => d.FamilyId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Products_Families_FamilyID");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.ProductsFamilies)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Products_Families_ProductID");
         });
 
         modelBuilder.Entity<ProductsPriceList>(entity =>

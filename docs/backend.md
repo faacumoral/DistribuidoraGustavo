@@ -54,6 +54,15 @@ Todas las rutas llevan el prefijo `/api` (la tabla lo incluye). Salvo indicació
 | GET | `/api/Clients/{clientId}` | — | `DTOResult<ClientModel>` | |
 | POST | `/api/Clients` | `ClientModel` | `DTOResult<ClientModel>` | Upsert. Valida `Name` y `DefaultPriceList`. En alta valida prefijo único; en modificación solo cambia `Name` y lista por defecto (el prefijo es inmutable). |
 
+### Families — [FamiliesController](../DistribuidoraGustavo.API/Controllers/FamiliesController.cs)
+
+| Método | Ruta | Body / Query | Respuesta | Notas |
+|---|---|---|---|---|
+| GET | `/api/Families` | `filter` | `ListResult<FamilyModel>` | Ordenadas por nombre; el filtro busca en nombre y subfijo. `ProductsCount` cuenta solo productos activos. |
+| GET | `/api/Families/{familyId}` | — | `DTOResult<FamilyModel>` | |
+| POST | `/api/Families` | `FamilyModel` | `DTOResult<FamilyModel>` | Upsert. Nombre y subfijo obligatorios y únicos; el subfijo se guarda en mayúsculas. |
+| DELETE | `/api/Families/{familyId}` | — | `BoolResult` | Baja física, solo si ninguna fila de `Products_Families` apunta a la familia (cuentan también los productos dados de baja). |
+
 ### Products — [ProductsController](../DistribuidoraGustavo.API/Controllers/ProductsController.cs)
 
 | Método | Ruta | Body / Query | Respuesta | Notas |
@@ -62,7 +71,7 @@ Todas las rutas llevan el prefijo `/api` (la tabla lo incluye). Salvo indicació
 | GET | `/api/Products/prices` | `filter`, `priceListId` | `ListResult<PricedProductModel>` | Lo usan el listado de productos y la pantalla de precios. Máx. 300. `priceListId` 0 o ausente trae precios de todas las listas. |
 | GET | `/api/Products/{ProductId}` | — | `DTOResult<ProductModel>` | |
 | DELETE | `/api/Products/{productId}` | — | `BoolResult` | Baja lógica (`Active = false`). |
-| POST | `/api/Products` | `ProductModel` | `DTOResult<ProductModel>` | Upsert. Recalcula los precios de todas las listas. Un alta con el código de un producto dado de baja lo reactiva. |
+| POST | `/api/Products` | `ProductModel` | `DTOResult<ProductModel>` | Upsert. Recalcula los precios de todas las listas. Un alta con el código de un producto dado de baja lo reactiva. `FamilyId` asigna la familia (0 o null la quita); los productos devuelven `FamilyId` y `FamilyName`. |
 
 ### PriceLists — [PriceListsController](../DistribuidoraGustavo.API/Controllers/PriceListsController.cs)
 
@@ -97,7 +106,8 @@ No hay ABM de listas de precios (figura como pendiente en `todo.txt`); se admini
 |---|---|---|
 | [UserService](../DistribuidoraGustavo.Core/Services/UserService.cs) | `DbContext`, `IJwtManager` | Login. |
 | [ClientService](../DistribuidoraGustavo.Core/Services/ClientService.cs) | `DbContext` | Listado, alta y modificación de clientes. |
-| [ProductService](../DistribuidoraGustavo.Core/Services/ProductService.cs) | `DbContext`, `IPriceListService` | Búsqueda, precios por lista, upsert. |
+| [ProductService](../DistribuidoraGustavo.Core/Services/ProductService.cs) | `DbContext`, `IPriceListService` | Búsqueda (también por nombre de familia), precios por lista, upsert. |
+| [FamilyService](../DistribuidoraGustavo.Core/Services/FamilyService.cs) | `DbContext` | Listado, alta, modificación y baja de familias. |
 | [PriceListService](../DistribuidoraGustavo.Core/Services/PriceListService.cs) | `DbContext`, `IExcelService` | Listado, importación de Excel, `CalculatePrices`. |
 | [ExcelService](../DistribuidoraGustavo.Core/Services/ExcelService.cs) | — | Lee la primera hoja y devuelve `ExcelProductModel` (todo como string). |
 | [InvoiceService](../DistribuidoraGustavo.Core/Services/InvoiceService.cs) | `DbContext`, `IPdfService`, `ITransactionService` | Facturas, numeración, tokens de descarga. |

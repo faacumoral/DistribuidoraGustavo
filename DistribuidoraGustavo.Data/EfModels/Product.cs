@@ -19,6 +19,8 @@ public partial class Product
 
     public int QuantityPerBox { get; set; }
 
+    public virtual ICollection<ProductsFamily> ProductsFamilies { get; set; } = new List<ProductsFamily>();
+
     public virtual ICollection<InvoicesProduct> InvoicesProducts { get; set; } = new List<InvoicesProduct>();
 
     public virtual ICollection<ProductsPriceList> ProductsPriceLists { get; set; } = new List<ProductsPriceList>();

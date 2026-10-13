@@ -18,6 +18,7 @@ builder.Services.AddTransient<IInvoiceService, InvoiceService>();
 builder.Services.AddTransient<IClientService, ClientService>();
 builder.Services.AddTransient<IPriceListService, PriceListService>();
 builder.Services.AddTransient<IProductService, ProductService>();
+builder.Services.AddTransient<IFamilyService, FamilyService>();
 builder.Services.AddTransient<IPdfService, PdfService>();
 builder.Services.AddTransient<IExcelService, ExcelService>();
 builder.Services.AddTransient<ITransactionService, TransactionService>();

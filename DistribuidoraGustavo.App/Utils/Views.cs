@@ -11,6 +11,8 @@
         Prices,
         Products,
         AddOrEditProduct,
+        Families,
+        AddOrEditFamily,
         Balances
     }
 }

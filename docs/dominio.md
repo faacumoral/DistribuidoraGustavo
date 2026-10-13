@@ -5,6 +5,7 @@
 ## Conceptos
 
 - **Producto**: tiene un código, un **precio base** y una **cantidad por bulto**.
+- **Familia**: agrupa productos; tiene un nombre y un **subfijo** para los códigos (por ejemplo "Gaseosas" / `GAS`). Un producto tiene como máximo una familia.
 - **Lista de precios**: un nombre y un **porcentaje** de recargo sobre el precio base.
 - **Cliente**: tiene una lista de precios por defecto, un **prefijo de factura** y un **saldo** de cuenta corriente.
 - **Factura**: pertenece a un cliente, tiene ítems con cantidad, precio unitario e importe.
@@ -29,9 +30,11 @@ Precio en lista = techo( PrecioBase × (1 + Percent / 100) )
 
 ## Productos
 
-- Búsqueda ([ProductService.SearchProducts](../DistribuidoraGustavo.Core/Services/ProductService.cs#L24)): solo activos; el filtro busca por *contains* sin distinguir mayúsculas en nombre, código o descripción, como una sola cadena. Sin ordenamiento explícito. Límite 100 (listado y facturación) o 300 (pantalla de precios).
+- Búsqueda ([ProductService.SearchProducts](../DistribuidoraGustavo.Core/Services/ProductService.cs#L24)): solo activos; el filtro busca por *contains* sin distinguir mayúsculas en nombre, código, descripción o **nombre de la familia**, como una sola cadena (escribir "gaseosas" trae también todos los productos de esa familia). Ordenado por código. Límite 100 (listado y facturación) o 300 (pantalla de precios).
 - Alta: código y nombre obligatorios; el código no puede repetirse.
-- Modificación: cambia nombre, descripción, precio base y unidades por bulto. El código no se modifica.
+- Familia (opcional): al elegirla en el alta, el código se completa con el subfijo (sin guion; se reemplaza solo el subfijo anterior si se cambia de familia) y hay que agregarle el resto a mano. Cambiar el subfijo de una familia no toca los códigos existentes. La importación de Excel no asigna ni modifica familias.
+- Familias: nombre y subfijo obligatorios y únicos; no se puede eliminar una familia que tenga productos.
+- Modificación: cambia familia, nombre, descripción, precio base y unidades por bulto. El código no se modifica.
 - `QuantityPerBox` (unidades por bulto) se carga desde el formulario de producto o por importación de Excel.
 - El formulario no tiene campo de descripción: al guardar copia el nombre a `Description`, igual que la importación de Excel.
 - Baja: es **lógica** (`Active = false`, [ProductService.Delete](../DistribuidoraGustavo.Core/Services/ProductService.cs)). El producto deja de aparecer en el listado, en la pantalla de precios y al facturar; las facturas que ya lo incluyen no cambian. Sus precios por lista se conservan.

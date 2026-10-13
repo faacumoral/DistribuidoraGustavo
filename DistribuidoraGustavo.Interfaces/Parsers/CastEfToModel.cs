@@ -14,6 +14,14 @@ namespace DistribuidoraGustavo.Interfaces.Parsers
                 Percent = priceList.Percent
             };
 
+        public static FamilyModel ToModel(this Family family)
+            => new()
+            {
+                FamilyId = family.FamilyId,
+                Name = family.Name,
+                CodeSuffix = family.CodeSuffix
+            };
+
         public static UserModel ToModel(this User user)
             => new()
             {
@@ -41,7 +49,9 @@ namespace DistribuidoraGustavo.Interfaces.Parsers
                 Name = product.Name,
                 ProductId = product.ProductId,
                 BasePrice = product.BasePrice,
-                QuantityPerBox = product.QuantityPerBox
+                QuantityPerBox = product.QuantityPerBox,
+                FamilyId = product.ProductsFamilies?.FirstOrDefault()?.FamilyId,
+                FamilyName = product.ProductsFamilies?.FirstOrDefault()?.Family?.Name
             };
 
         public static ProductInvoiceModel ToModel(this InvoicesProduct invoicesProducts)

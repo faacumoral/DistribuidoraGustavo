@@ -33,6 +33,22 @@
     <div class="form-layout">
 
         <div>
+            <div class="field">
+                <label class="field-label" for="selFamily">Familia</label>
+                @if (ProductId == 0)
+                {
+                    <p class="field-help">Opcional. Al elegirla, el código se completa con el subfijo de la familia.</p>
+                }
+                <select id="selFamily" class="form-select form-control" disabled="@State.Processing"
+                        value="@(Product.FamilyId ?? 0)" @onchange="FamilyChanged">
+                    <option value="0">Sin familia</option>
+                    @foreach (var family in Families)
+                    {
+                        <option value="@family.FamilyId">@family.Name (@family.CodeSuffix)</option>
+                    }
+                </select>
+            </div>
+
             <div class="field-row short-first">
                 <div class="field">
                     <label class="field-label" for="txtCode">Código</label>
