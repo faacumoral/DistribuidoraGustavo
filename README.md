@@ -96,3 +96,4 @@ La carpeta resultante contiene todo: la API, el frontend compilado (en `wwwroot/
 | [docs/dominio.md](docs/dominio.md) | Reglas de negocio: precios, facturas, numeración, saldos, importación de Excel, PDF |
 | [docs/guia-de-cambios.md](docs/guia-de-cambios.md) | Recetas paso a paso para los cambios más comunes |
 | [docs/deuda-tecnica.md](docs/deuda-tecnica.md) | Bugs latentes, riesgos y trampas a tener en cuenta antes de tocar el código |
+| [docs/ci-cd.md](docs/ci-cd.md) | Workflows de GitHub Actions, configuración en Azure/GitHub y proceso de deploy |

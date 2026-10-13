@@ -12,6 +12,7 @@
    - `InitConfig()`: carga `EncryptKey` en el singleton estático `ApplicationSettings.Config` (solo puede inicializarse una vez).
    - `AddJwtManager()`: crea un [JwtManager](../DistribuidoraGustavo.Core/Services/JwtManager.cs) como singleton `IJwtManager` y configura `JwtBearer` validando issuer, audience, lifetime y firma.
 4. `AddDbContext<DistribuidoraGustavoContext>` con SQL Server y la connection string `DistribuidoraGustavo`.
+5. Tras `Build()`, `Database.Migrate()` aplica las migraciones pendientes; si falla, la app no arranca.
 
 Pipeline: `UseWebAssemblyDebugging` (solo en Development) → `UseSwagger` → `UseSwaggerUI` → `UseHttpsRedirection` → `UseBlazorFrameworkFiles` → `UseStaticFiles` → `UseAuthentication` → `UseAuthorization` → `MapControllers` → `api/{**path}` devuelve 404 → `MapFallbackToFile("index.html")`. Swagger está activo en todos los entornos.
 

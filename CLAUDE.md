@@ -11,6 +11,7 @@ Antes de modificar código, leer [README.md](README.md) y el documento de `docs/
 - [docs/dominio.md](docs/dominio.md): reglas de negocio.
 - [docs/guia-de-cambios.md](docs/guia-de-cambios.md): recetas para cambios comunes.
 - [docs/deuda-tecnica.md](docs/deuda-tecnica.md): bugs latentes y trampas.
+- [docs/ci-cd.md](docs/ci-cd.md): workflows de GitHub Actions y deploy a Azure.
 
 ## Reglas rápidas
 

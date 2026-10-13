@@ -33,6 +33,12 @@ builder.Services.AddDbContext<DistribuidoraGustavoContext>(
 
 var app = builder.Build();
 
+// Apply pending EF Core migrations on startup (a failure stops the app instead of running on an outdated schema)
+using (var scope = app.Services.CreateScope())
+{
+    scope.ServiceProvider.GetRequiredService<DistribuidoraGustavoContext>().Database.Migrate();
+}
+
 // Configure the HTTP request pipeline.
 
 if (app.Environment.IsDevelopment())

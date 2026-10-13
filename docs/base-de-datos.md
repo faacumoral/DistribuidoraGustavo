@@ -142,13 +142,13 @@ Una migración ya aplicada en alguna base no se edita: se corrige con una migrac
 
 ## Desplegar cambios
 
-Generar un script idempotente (se puede correr contra cualquier base, aplica solo lo que falte) y ejecutarlo a mano:
+La API aplica las migraciones pendientes al arrancar (`Database.Migrate()` en `Program.cs`), así que desplegar la API alcanza: ver [ci-cd.md](ci-cd.md). El usuario de la connection string necesita permisos de DDL.
+
+Si hace falta aplicarlas a mano, generar un script idempotente (se puede correr contra cualquier base, aplica solo lo que falte):
 
 ```bash
 dotnet ef migrations script --idempotent --project DistribuidoraGustavo.Data --startup-project DistribuidoraGustavo.API -o migracion.sql
 ```
-
-La API no aplica migraciones al arrancar.
 
 ## Adoptar una base que ya existe
 
